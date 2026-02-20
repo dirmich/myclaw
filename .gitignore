@@ -49,4 +49,4 @@ test-*/
 
 # AI Rules & Prompts
 .claude/
-need.md
+docs/need.md
