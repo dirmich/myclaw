@@ -4,6 +4,7 @@ import { useInstallStore } from '@/store/useInstallStore';
 import EnvironmentStep from '@/components/features/EnvironmentStep';
 import SSHConnectionStep from '@/components/features/SSHConnectionStep';
 import KeysSetupStep from '@/components/features/KeysSetupStep';
+import InstallProgressStep from '@/components/features/InstallProgressStep';
 import InstallationStepper from '@/components/features/InstallationStepper';
 import { useTranslations } from 'next-intl';
 
@@ -27,12 +28,7 @@ export default function MainPage() {
       {currentStep === 1 && <EnvironmentStep />}
       {currentStep === 2 && <SSHConnectionStep />}
       {currentStep === 3 && <KeysSetupStep />}
-      {currentStep === 4 && (
-        <div className="w-full mt-6 p-8 flex flex-col items-center justify-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg">
-          <p className="text-zinc-500 mb-4">Step 4: Installation (Coming soon)</p>
-        </div>
-      )}
-
+      {currentStep === 4 && <InstallProgressStep />}
     </div>
   );
 }

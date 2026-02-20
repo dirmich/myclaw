@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useInstallStore } from '@/store/useInstallStore';
+import { useDialogStore } from '@/store/useDialogStore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -26,8 +27,19 @@ const keysSchema = z.object({
 
 export default function KeysSetupStep() {
     const { setStep, setKeys, aiKey: defaultAiKey, telegramToken: defaultTelegramToken } = useInstallStore();
+    const { confirm } = useDialogStore();
     const [isTesting, setIsTesting] = useState(false);
     const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+
+    const handleBack = () => {
+        confirm({
+            title: '이전 단계로 이동하시겠습니까?',
+            description: '입력하신 키 정보가 저장되지 않고 초기화될 수 있습니다.',
+            confirmText: '이동',
+            cancelText: '취소',
+            onConfirm: () => setStep(2)
+        });
+    };
 
     const form = useForm<z.infer<typeof keysSchema>>({
         resolver: zodResolver(keysSchema),
@@ -130,7 +142,7 @@ export default function KeysSetupStep() {
 
                     </CardContent>
                     <CardFooter className="flex justify-between bg-zinc-50 dark:bg-zinc-900/50 px-6 py-4 border-t border-zinc-200 dark:border-zinc-800">
-                        <Button type="button" variant="outline" onClick={() => setStep(2)} disabled={isTesting}>
+                        <Button type="button" variant="outline" onClick={handleBack} disabled={isTesting}>
                             Back
                         </Button>
                         <Button type="submit" disabled={isTesting} className={testResult?.success ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : ''}>

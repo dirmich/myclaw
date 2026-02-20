@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useInstallStore } from '@/store/useInstallStore';
+import { useDialogStore } from '@/store/useDialogStore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -42,8 +43,19 @@ const sshSchema = z.object({
 
 export default function SSHConnectionStep() {
     const { currentStep, setStep, setSSHConfig, sshConfig: defaultValues } = useInstallStore();
+    const { confirm } = useDialogStore();
     const [isTesting, setIsTesting] = useState(false);
     const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+
+    const handleBack = () => {
+        confirm({
+            title: '이전 단계로 이동하시겠습니까?',
+            description: '입력하신 정보가 초기화될 수 있습니다. 계속하시겠습니까?',
+            confirmText: '이동',
+            cancelText: '취소',
+            onConfirm: () => setStep(1)
+        });
+    };
 
     const form = useForm<z.infer<typeof sshSchema>>({
         resolver: zodResolver(sshSchema),
@@ -98,6 +110,19 @@ export default function SSHConnectionStep() {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     <CardContent className="space-y-4">
+                        <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-info text-blue-600"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                            <AlertTitle className="text-blue-800 dark:text-blue-300">중요: 방화벽 설정 안내 (Port Requirements)</AlertTitle>
+                            <AlertDescription className="text-blue-700 dark:text-blue-400 text-xs">
+                                AWS EC2 등 클라우드 환경을 사용하는 경우, 인바운드 규칙에서 다음 포트가 개방되어 있는지 확인해 주세요:
+                                <ul className="list-disc list-inside mt-1 ml-1">
+                                    <li>80/443 (Web Admin 접속용)</li>
+                                    <li>SSH 포트 (기본 22)</li>
+                                    <li>OpenClaw 기본 포트</li>
+                                </ul>
+                            </AlertDescription>
+                        </Alert>
+
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <FormField
                                 control={form.control}
@@ -224,7 +249,7 @@ export default function SSHConnectionStep() {
 
                     </CardContent>
                     <CardFooter className="flex justify-between bg-zinc-50 dark:bg-zinc-900/50 px-6 py-4 border-t border-zinc-200 dark:border-zinc-800">
-                        <Button type="button" variant="outline" onClick={() => setStep(1)} disabled={isTesting}>
+                        <Button type="button" variant="outline" onClick={handleBack} disabled={isTesting}>
                             Back
                         </Button>
                         <Button type="submit" disabled={isTesting} className={testResult?.success ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : ''}>

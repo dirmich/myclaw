@@ -22,6 +22,7 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import Header from '@/components/features/Header';
+import { GlobalDialog } from '@/components/shared/GlobalDialog';
 
 export default async function RootLayout({
   children,
@@ -49,6 +50,7 @@ export default async function RootLayout({
       >
         <NextIntlClientProvider messages={messages}>
           <Header />
+          <GlobalDialog />
           <main className="pt-20 pb-10 min-h-screen">
             {children}
           </main>
