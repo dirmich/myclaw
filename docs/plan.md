@@ -59,10 +59,10 @@ src/
   - [x] 테스트: 렌더링 검증, 강제 단계 이동 락 기능 확인
 
 ### Phase 3: 환경 및 SSH 정보 입력 📋
-- [ ] 설치 환경(VirtualBox, AWS EC2, Mac mini 등) 선택 폼
-- [ ] SSH 접속 정보(Host, Port, User, Auth) 폼
-  - [ ] 테스트: 필수 입력값 제출 시 유효성 검증
-  - [ ] 테스트: SSH 연결 API 정상/실패 모의 응답 검증
+- [x] 설치 환경(VirtualBox, AWS EC2, Mac mini 등) 선택 폼
+- [x] SSH 접속 정보(Host, Port, User, Auth) 폼
+  - [x] 테스트: 필수 입력값 제출 시 유효성 검증
+  - [x] 테스트: SSH 연결 API 정상/실패 모의 응답 검증
 
 ### Phase 4: AI & Telegram 키 입력 및 테스트 📋
 - [ ] 키 입력 폼
@@ -75,10 +75,10 @@ src/
 ## 진행 상황
 
 ### 현재 작업
-- 작업 중: Phase 3. 환경 및 SSH 정보 입력
-- 다음 작업: 설치 환경(VirtualBox, AWS, Mac) 선택 폼 구현
+- 작업 중: Phase 4. AI & Telegram 키 입력 및 테스트
+- 다음 작업: 키 입력 폼 구현 빛 모의 API 구현
 
 ### 통계
-- 완료: 6/11
-- 진행률: 55%
+- 완료: 9/11
+- 진행률: 81%
 - 테스트 커버리지: 0%
