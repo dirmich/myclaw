@@ -1,5 +1,95 @@
 {
+  "Common": {
+    "back": "Back",
+    "next": "Next",
+    "continue": "Continue",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "start": "Start Installation",
+    "proceeding": "Proceeding...",
+    "finish": "Finish",
+    "success": "Success",
+    "failed": "Failed",
+    "loading": "Loading...",
+    "error": "Error"
+  },
   "Index": {
-    "title": "Welcome to OpenClaw Web Installer"
+    "title": "OpenClaw Installation Wizard",
+    "description": "Follow these steps to quickly get OpenClaw running on your preferred environment."
+  },
+  "Landing": {
+    "version_tag": "v0.1.0 Alpha is now live",
+    "hero_title_1": "Everything your",
+    "hero_title_2": "AI Agent",
+    "hero_title_3": "needs.",
+    "hero_desc": "OpenClaw is the ultimate open-source framework for deploying and managing autonomous AI agents in any environment.",
+    "start_btn": "Start Installation",
+    "github_btn": "View on GitHub",
+    "demo_title": "Interactive Demo / Preview coming soon",
+    "demo_desc": "Experience the power of OpenClaw in your browser.",
+    "features_title": "Built for Modern AI Workflows",
+    "features_desc": "Powerful features to help you build, deploy, and scale your AI automation layer with confidence.",
+    "cta_title": "Ready to take off?",
+    "cta_desc": "Join 1,000+ developers building the future of autonomous agents with OpenClaw.",
+    "cta_btn": "Initialize Your Instance",
+    "footer": "© 2026 MyClaw. OpenClaw Community Project. All rights reserved.",
+    "feature_ai_title": "AI Core Engine",
+    "feature_ai_desc": "Multi-model support including GPT-4, Claude 3, and Local LLMs.",
+    "feature_secure_title": "Secure by Default",
+    "feature_secure_desc": "End-to-end encryption for all communications and key storage.",
+    "feature_easy_title": "Easy Installation",
+    "feature_easy_desc": "One-click deployment to AWS, VirtualBox, or Bare Metal servers.",
+    "feature_console_title": "Remote Console",
+    "feature_console_desc": "Full terminal access directly through your Telegram bot or Dashboard.",
+    "feature_bot_title": "Multi-Channel Bot",
+    "feature_bot_desc": "Connect via Telegram, Discord, or Web Chat with ease.",
+    "feature_auto_title": "Smart Automations",
+    "feature_auto_desc": "Schedule tasks and create complex AI workflows without coding."
+  },
+  "Environment": {
+    "title": "Select Environment",
+    "desc": "Choose where you want to install OpenClaw."
+  },
+  "SSH": {
+    "title": "SSH Connection Settings",
+    "desc": "Enter the SSH details to connect to your target environment.",
+    "firewall_title": "Important: Firewall Requirements",
+    "firewall_desc": "If using cloud environments like AWS EC2, ensure the following ports are open in your inbound rules:",
+    "port_web": "80/443 (Web Admin)",
+    "port_ssh": "SSH Port (default 22)",
+    "port_app": "OpenClaw Default Ports",
+    "host": "Host / IP Address",
+    "port": "Port",
+    "user": "Username",
+    "auth_type": "Authentication Type",
+    "password": "Password",
+    "private_key": "Private Key",
+    "test_btn": "Test Connection & Continue",
+    "testing": "Testing Connection..."
+  },
+  "Keys": {
+    "title": "API Keys Setup",
+    "desc": "Enter your AI Provider Key and Telegram Bot Token. These are optional but recommended.",
+    "ai_label": "AI Provider Key (e.g. OpenAI)",
+    "ai_desc": "Used by OpenClaw to power the conversational AI agent.",
+    "tg_label": "Telegram Bot Token",
+    "tg_desc": "Enables the Telegram Bot interface. Create one via @BotFather.",
+    "test_btn": "Test Keys & Continue",
+    "testing": "Validating Keys..."
+  },
+  "Install": {
+    "title": "Installing OpenClaw...",
+    "title_success": "Installation Complete",
+    "desc": "Please wait while we perform the installation tasks on your server.",
+    "desc_success": "OpenClaw has been successfully installed in your environment.",
+    "log_terminal": "Terminal Logs",
+    "in_progress": "Installation in progress... do not close this window.",
+    "failed": "Installation failed. Please check the logs.",
+    "dashboard_btn": "Go to Dashboard"
+  },
+  "Dialog": {
+    "back_title": "Go back?",
+    "back_desc": "Your entered information might be lost. Do you want to continue?",
+    "move": "Move"
   }
 }

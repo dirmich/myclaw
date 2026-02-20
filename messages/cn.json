@@ -1,5 +1,95 @@
 {
+  "Common": {
+    "back": "返回",
+    "next": "下一步",
+    "continue": "继续",
+    "cancel": "取消",
+    "confirm": "确认",
+    "start": "开始安装",
+    "proceeding": "正在进行...",
+    "finish": "完成",
+    "success": "成功",
+    "failed": "失败",
+    "loading": "加载中...",
+    "error": "错误"
+  },
   "Index": {
-    "title": "欢迎使用 OpenClaw Web Installer"
+    "title": "OpenClaw 安装向导",
+    "description": "按照以下步骤，在您喜欢的环境中快速设置 OpenClaw。"
+  },
+  "Landing": {
+    "version_tag": "v0.1.0 Alpha 版本已发布",
+    "hero_title_1": "您的",
+    "hero_title_2": "AI 代理",
+    "hero_title_3": "所需的一切。",
+    "hero_desc": "OpenClaw 是在任何环境中部署和管理自主 AI 代理的终极开源框架。",
+    "start_btn": "开始安装",
+    "github_btn": "在 GitHub 上查看",
+    "demo_title": "互动演示正在准备中",
+    "demo_desc": "在浏览器中直接体验 OpenClaw 的强大功能。",
+    "features_title": "为现代 AI 工作流而建",
+    "features_desc": "强大的功能助您充满信心地构建、部署和扩展 AI 自动化层。",
+    "cta_title": "准备好开始了吗？",
+    "cta_desc": "加入 1,000 多名开发者，与 OpenClaw 一起创造自主代理的未来。",
+    "cta_btn": "初始化您的实例",
+    "footer": "© 2026 MyClaw. OpenClaw Community Project. 保留所有权利。",
+    "feature_ai_title": "AI 核心引擎",
+    "feature_ai_desc": "支持多模型，包括 GPT-4、Claude 3 和本地 LLM。",
+    "feature_secure_title": "默认安全",
+    "feature_secure_desc": "所有通信和密钥存储均采用端到端加密。",
+    "feature_easy_title": "简易安装",
+    "feature_easy_desc": "一键部署至 AWS、VirtualBox 或裸机服务器。",
+    "feature_console_title": "远程控制台",
+    "feature_console_desc": "通过电报机器人或仪表板直接进行全终端访问。",
+    "feature_bot_title": "多渠道机器人",
+    "feature_bot_desc": "轻松连接电报、Discord 或网页聊天。",
+    "feature_auto_title": "智能自动化",
+    "feature_auto_desc": "无需编码即可安排任务并创建复杂的 AI 工作流。"
+  },
+  "Environment": {
+    "title": "选择环境",
+    "desc": "选择您想要安装 OpenClaw 的位置。"
+  },
+  "SSH": {
+    "title": "SSH 连接设置",
+    "desc": "输入 SSH 详细信息以连接到您的目标环境。",
+    "firewall_title": "重要：防火墙设置指南",
+    "firewall_desc": "如果您使用的是 AWS EC2 等云环境，请确保入站规则中已开放以下端口：",
+    "port_web": "80/443 (用于网页管理工具)",
+    "port_ssh": "SSH 端口 (默认 22)",
+    "port_app": "OpenClaw 默认端口",
+    "host": "主机 / IP 地址",
+    "port": "端口",
+    "user": "用户名",
+    "auth_type": "身份验证类型",
+    "password": "密码",
+    "private_key": "私钥 (Private Key)",
+    "test_btn": "测试连接并继续",
+    "testing": "正在测试连接..."
+  },
+  "Keys": {
+    "title": "API 密钥设置",
+    "desc": "输入您的 AI 提供商密钥和电报机器人令牌。这些是可选的，但建议填写。",
+    "ai_label": "AI 提供商密钥 (例如 OpenAI)",
+    "ai_desc": "OpenClaw 将使用此密钥驱动对话式 AI 代理。",
+    "tg_label": "电报机器人令牌",
+    "tg_desc": "启用电报机器人界面。请通过 @BotFather 创建。",
+    "test_btn": "测试密钥并继续",
+    "testing": "正在验证密钥..."
+  },
+  "Install": {
+    "title": "正在安装 OpenClaw...",
+    "title_success": "安装完成",
+    "desc": "服务器正在执行安装任务，请稍候。",
+    "desc_success": "OpenClaw 已成功安装在您的环境中。",
+    "log_terminal": "终端日志",
+    "in_progress": "安装正在进行中，请勿关闭此窗口。",
+    "failed": "安装失败，请检查日志。",
+    "dashboard_btn": "前往仪表板"
+  },
+  "Dialog": {
+    "back_title": "返回上一步？",
+    "back_desc": "您输入的信息可能会丢失。是否继续？",
+    "move": "移动"
   }
 }

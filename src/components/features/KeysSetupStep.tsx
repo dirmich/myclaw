@@ -25,7 +25,12 @@ const keysSchema = z.object({
     telegramToken: z.string().optional(),
 });
 
+import { useTranslations } from 'next-intl';
+
 export default function KeysSetupStep() {
+    const t = useTranslations('Keys');
+    const tc = useTranslations('Common');
+    const td = useTranslations('Dialog');
     const { setStep, setKeys, aiKey: defaultAiKey, telegramToken: defaultTelegramToken } = useInstallStore();
     const { confirm } = useDialogStore();
     const [isTesting, setIsTesting] = useState(false);
@@ -33,10 +38,10 @@ export default function KeysSetupStep() {
 
     const handleBack = () => {
         confirm({
-            title: '이전 단계로 이동하시겠습니까?',
-            description: '입력하신 키 정보가 저장되지 않고 초기화될 수 있습니다.',
-            confirmText: '이동',
-            cancelText: '취소',
+            title: td('back_title'),
+            description: td('back_desc'),
+            confirmText: td('move'),
+            cancelText: tc('cancel'),
             onConfirm: () => setStep(2)
         });
     };
@@ -50,8 +55,6 @@ export default function KeysSetupStep() {
     });
 
     async function onSubmit(values: z.infer<typeof keysSchema>) {
-        // If both are empty, we could just proceed, but we'll show a warning or proceed anyway.
-        // Let's test them if they provided at least one.
         if (!values.aiKey && !values.telegramToken) {
             setKeys('', '');
             setStep(4);
@@ -78,7 +81,7 @@ export default function KeysSetupStep() {
                 }, 1500);
             }
         } catch (err) {
-            setTestResult({ success: false, message: 'Network error occurred validating keys.' });
+            setTestResult({ success: false, message: tc('error') });
         } finally {
             setIsTesting(false);
         }
@@ -87,9 +90,9 @@ export default function KeysSetupStep() {
     return (
         <Card className="w-full mt-6 shadow-sm border-zinc-200 dark:border-zinc-800">
             <CardHeader>
-                <CardTitle>API Keys Setup</CardTitle>
+                <CardTitle>{t('title')}</CardTitle>
                 <CardDescription>
-                    Enter your AI Provider Key and Telegram Bot Token. These are optional but recommended for full functionality.
+                    {t('desc')}
                 </CardDescription>
             </CardHeader>
 
@@ -102,12 +105,12 @@ export default function KeysSetupStep() {
                             name="aiKey"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>AI Provider Key (e.g. OpenAI)</FormLabel>
+                                    <FormLabel>{t('ai_label')}</FormLabel>
                                     <FormControl>
                                         <Input type="password" placeholder="sk-..." {...field} />
                                     </FormControl>
                                     <FormDescription>
-                                        Will be used by OpenClaw to power the conversational AI agent.
+                                        {t('ai_desc')}
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
@@ -119,12 +122,12 @@ export default function KeysSetupStep() {
                             name="telegramToken"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Telegram Bot Token</FormLabel>
+                                    <FormLabel>{t('tg_label')}</FormLabel>
                                     <FormControl>
-                                        <Input type="password" placeholder="123456789:ABCdefGHIjklmNOPqrstUVW..." {...field} />
+                                        <Input type="password" placeholder="..." {...field} />
                                     </FormControl>
                                     <FormDescription>
-                                        Enables the Telegram Bot interface. Create one via @BotFather.
+                                        {t('tg_desc')}
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
@@ -133,7 +136,7 @@ export default function KeysSetupStep() {
 
                         {testResult && (
                             <Alert variant={testResult.success ? 'default' : 'destructive'} className={testResult.success ? 'border-emerald-500 text-emerald-700 bg-emerald-50 dark:bg-emerald-950/30' : ''}>
-                                <AlertTitle>{testResult.success ? 'Success' : 'Validation Failed'}</AlertTitle>
+                                <AlertTitle>{testResult.success ? tc('success') : tc('failed')}</AlertTitle>
                                 <AlertDescription>
                                     {testResult.message}
                                 </AlertDescription>
@@ -143,7 +146,7 @@ export default function KeysSetupStep() {
                     </CardContent>
                     <CardFooter className="flex justify-between bg-zinc-50 dark:bg-zinc-900/50 px-6 py-4 border-t border-zinc-200 dark:border-zinc-800">
                         <Button type="button" variant="outline" onClick={handleBack} disabled={isTesting}>
-                            Back
+                            {tc('back')}
                         </Button>
                         <Button type="submit" disabled={isTesting} className={testResult?.success ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : ''}>
                             {isTesting ? (
@@ -152,12 +155,12 @@ export default function KeysSetupStep() {
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    Validating Keys...
+                                    {t('testing')}
                                 </span>
                             ) : testResult?.success ? (
-                                'Proceeding...'
+                                tc('proceeding')
                             ) : (
-                                'Test Keys & Continue'
+                                t('test_btn')
                             )}
                         </Button>
                     </CardFooter>

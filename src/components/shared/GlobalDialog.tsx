@@ -11,10 +11,11 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useDialogStore } from "@/store/useDialogStore";
-import { Button } from "@/components/ui/button";
+import { useTranslations } from 'next-intl';
 
 export function GlobalDialog() {
     const { isOpen, options, close } = useDialogStore();
+    const tc = useTranslations('Common');
 
     if (!options) return null;
 
@@ -40,14 +41,14 @@ export function GlobalDialog() {
                 <AlertDialogFooter>
                     {options.type === 'confirm' && (
                         <AlertDialogCancel onClick={handleCancel}>
-                            {options.cancelText || '취소 (Cancel)'}
+                            {options.cancelText || tc('cancel')}
                         </AlertDialogCancel>
                     )}
                     <AlertDialogAction
                         onClick={handleConfirm}
                         className={options.variant === 'destructive' ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' : ''}
                     >
-                        {options.confirmText || '확인 (Confirm)'}
+                        {options.confirmText || tc('confirm')}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

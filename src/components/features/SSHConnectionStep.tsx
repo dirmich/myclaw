@@ -21,6 +21,8 @@ import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
+import { useTranslations } from 'next-intl';
+
 const sshSchema = z.object({
     host: z.string().min(1, 'Host is required'),
     port: z.number().min(1).max(65535, 'Invalid port'),
@@ -38,10 +40,13 @@ const sshSchema = z.object({
     return true;
 }, {
     message: "Authentication credential is required",
-    path: ["password"], // Path where the error will be attached
+    path: ["password"],
 });
 
 export default function SSHConnectionStep() {
+    const t = useTranslations('SSH');
+    const tc = useTranslations('Common');
+    const td = useTranslations('Dialog');
     const { currentStep, setStep, setSSHConfig, sshConfig: defaultValues } = useInstallStore();
     const { confirm } = useDialogStore();
     const [isTesting, setIsTesting] = useState(false);
@@ -49,10 +54,10 @@ export default function SSHConnectionStep() {
 
     const handleBack = () => {
         confirm({
-            title: '이전 단계로 이동하시겠습니까?',
-            description: '입력하신 정보가 초기화될 수 있습니다. 계속하시겠습니까?',
-            confirmText: '이동',
-            cancelText: '취소',
+            title: td('back_title'),
+            description: td('back_desc'),
+            confirmText: td('move'),
+            cancelText: tc('cancel'),
             onConfirm: () => setStep(1)
         });
     };
@@ -92,7 +97,7 @@ export default function SSHConnectionStep() {
                 }, 1500);
             }
         } catch (err) {
-            setTestResult({ success: false, message: 'Network error occurred during test.' });
+            setTestResult({ success: false, message: tc('error') });
         } finally {
             setIsTesting(false);
         }
@@ -101,9 +106,9 @@ export default function SSHConnectionStep() {
     return (
         <Card className="w-full mt-6 shadow-sm border-zinc-200 dark:border-zinc-800">
             <CardHeader>
-                <CardTitle>SSH Connection Settings</CardTitle>
+                <CardTitle>{t('title')}</CardTitle>
                 <CardDescription>
-                    Enter the SSH details to connect to your target environment.
+                    {t('desc')}
                 </CardDescription>
             </CardHeader>
 
@@ -112,13 +117,13 @@ export default function SSHConnectionStep() {
                     <CardContent className="space-y-4">
                         <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-info text-blue-600"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
-                            <AlertTitle className="text-blue-800 dark:text-blue-300">중요: 방화벽 설정 안내 (Port Requirements)</AlertTitle>
+                            <AlertTitle className="text-blue-800 dark:text-blue-300">{t('firewall_title')}</AlertTitle>
                             <AlertDescription className="text-blue-700 dark:text-blue-400 text-xs">
-                                AWS EC2 등 클라우드 환경을 사용하는 경우, 인바운드 규칙에서 다음 포트가 개방되어 있는지 확인해 주세요:
+                                {t('firewall_desc')}
                                 <ul className="list-disc list-inside mt-1 ml-1">
-                                    <li>80/443 (Web Admin 접속용)</li>
-                                    <li>SSH 포트 (기본 22)</li>
-                                    <li>OpenClaw 기본 포트</li>
+                                    <li>{t('port_web')}</li>
+                                    <li>{t('port_ssh')}</li>
+                                    <li>{t('port_app')}</li>
                                 </ul>
                             </AlertDescription>
                         </Alert>
@@ -129,7 +134,7 @@ export default function SSHConnectionStep() {
                                 name="host"
                                 render={({ field }) => (
                                     <FormItem className="md:col-span-3">
-                                        <FormLabel>Host / IP Address</FormLabel>
+                                        <FormLabel>{t('host')}</FormLabel>
                                         <FormControl>
                                             <Input placeholder="192.168.1.100 or example.com" {...field} />
                                         </FormControl>
@@ -142,7 +147,7 @@ export default function SSHConnectionStep() {
                                 name="port"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Port</FormLabel>
+                                        <FormLabel>{t('port')}</FormLabel>
                                         <FormControl>
                                             <Input type="number" {...field} onChange={e => field.onChange(e.target.value ? Number(e.target.value) : '')} />
                                         </FormControl>
@@ -157,7 +162,7 @@ export default function SSHConnectionStep() {
                             name="username"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Username</FormLabel>
+                                    <FormLabel>{t('user')}</FormLabel>
                                     <FormControl>
                                         <Input placeholder="root, ubuntu, etc." {...field} />
                                     </FormControl>
@@ -171,7 +176,7 @@ export default function SSHConnectionStep() {
                             name="authType"
                             render={({ field }) => (
                                 <FormItem className="space-y-3">
-                                    <FormLabel>Authentication Method</FormLabel>
+                                    <FormLabel>{t('auth_type')}</FormLabel>
                                     <FormControl>
                                         <RadioGroup
                                             onValueChange={field.onChange}
@@ -183,7 +188,7 @@ export default function SSHConnectionStep() {
                                                     <RadioGroupItem value="password" />
                                                 </FormControl>
                                                 <FormLabel className="font-normal cursor-pointer">
-                                                    Password
+                                                    {t('password')}
                                                 </FormLabel>
                                             </FormItem>
                                             <FormItem className="flex items-center space-x-2 space-y-0">
@@ -191,7 +196,7 @@ export default function SSHConnectionStep() {
                                                     <RadioGroupItem value="key" />
                                                 </FormControl>
                                                 <FormLabel className="font-normal cursor-pointer">
-                                                    SSH Private Key
+                                                    {t('private_key')}
                                                 </FormLabel>
                                             </FormItem>
                                         </RadioGroup>
@@ -207,9 +212,9 @@ export default function SSHConnectionStep() {
                                 name="password"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Password</FormLabel>
+                                        <FormLabel>{t('password')}</FormLabel>
                                         <FormControl>
-                                            <Input type="password" placeholder="Enter SSH password" {...field} />
+                                            <Input type="password" placeholder="..." {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -221,7 +226,7 @@ export default function SSHConnectionStep() {
                                 name="privateKey"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Private Key</FormLabel>
+                                        <FormLabel>{t('private_key')}</FormLabel>
                                         <FormControl>
                                             <textarea
                                                 className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm font-mono placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
@@ -229,9 +234,6 @@ export default function SSHConnectionStep() {
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormDescription>
-                                            We do not store your private key. It is only used for the installation session.
-                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -240,7 +242,7 @@ export default function SSHConnectionStep() {
 
                         {testResult && (
                             <Alert variant={testResult.success ? 'default' : 'destructive'} className={testResult.success ? 'border-emerald-500 text-emerald-700 bg-emerald-50 dark:bg-emerald-950/30' : ''}>
-                                <AlertTitle>{testResult.success ? 'Success' : 'Connection Failed'}</AlertTitle>
+                                <AlertTitle>{testResult.success ? tc('success') : tc('failed')}</AlertTitle>
                                 <AlertDescription>
                                     {testResult.message}
                                 </AlertDescription>
@@ -250,7 +252,7 @@ export default function SSHConnectionStep() {
                     </CardContent>
                     <CardFooter className="flex justify-between bg-zinc-50 dark:bg-zinc-900/50 px-6 py-4 border-t border-zinc-200 dark:border-zinc-800">
                         <Button type="button" variant="outline" onClick={handleBack} disabled={isTesting}>
-                            Back
+                            {tc('back')}
                         </Button>
                         <Button type="submit" disabled={isTesting} className={testResult?.success ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : ''}>
                             {isTesting ? (
@@ -259,12 +261,12 @@ export default function SSHConnectionStep() {
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    Testing Connection...
+                                    {t('testing')}
                                 </span>
                             ) : testResult?.success ? (
-                                'Proceeding...'
+                                tc('proceeding')
                             ) : (
-                                'Test Connection & Continue'
+                                t('test_btn')
                             )}
                         </Button>
                     </CardFooter>

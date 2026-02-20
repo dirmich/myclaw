@@ -7,7 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
+import { useTranslations } from 'next-intl';
+
 export default function InstallProgressStep() {
+    const t = useTranslations('Install');
+    const tc = useTranslations('Common');
     const {
         environment,
         sshConfig,
@@ -29,7 +33,6 @@ export default function InstallProgressStep() {
     }, []);
 
     useEffect(() => {
-        // Auto scroll terminal logs
         if (scrollRef.current) {
             scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }
@@ -48,7 +51,6 @@ export default function InstallProgressStep() {
             const data = await res.json();
 
             if (data.success) {
-                // Simulate progress through stages
                 for (const stage of data.stages) {
                     await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
                     setInstallProgress(stage.progress);
@@ -57,11 +59,11 @@ export default function InstallProgressStep() {
                 setInstallStatus('success');
             } else {
                 setInstallStatus('error');
-                addInstallLog(`[ERROR] ${data.message || 'Installation failed'}`);
+                addInstallLog(`[ERROR] ${data.message || t('failed')}`);
             }
         } catch (error) {
             setInstallStatus('error');
-            addInstallLog(`[ERROR] Network error during installation.`);
+            addInstallLog(`[ERROR] ${tc('error')}`);
         }
     };
 
@@ -69,13 +71,11 @@ export default function InstallProgressStep() {
         <Card className="w-full mt-6 shadow-sm border-zinc-200 dark:border-zinc-800">
             <CardHeader>
                 <CardTitle className="flex items-center justify-between">
-                    <span>{installStatus === 'success' ? 'Installation Complete' : 'Installing OpenClaw...'}</span>
+                    <span>{installStatus === 'success' ? t('title_success') : t('title')}</span>
                     <span className="text-sm font-normal text-zinc-500">{installProgress}%</span>
                 </CardTitle>
                 <CardDescription>
-                    {installStatus === 'success'
-                        ? 'OpenClaw has been successfully installed in your environment.'
-                        : 'Please wait while we perform the installation tasks on your server.'}
+                    {installStatus === 'success' ? t('desc_success') : t('desc')}
                 </CardDescription>
             </CardHeader>
 
@@ -83,6 +83,7 @@ export default function InstallProgressStep() {
                 <Progress value={installProgress} className="h-2" />
 
                 <div className="rounded-md bg-zinc-950 p-4 font-mono text-sm text-zinc-50 border border-zinc-800">
+                    <CardTitle className="text-xs mb-2 opacity-50 uppercase tracking-widest">{t('log_terminal')}</CardTitle>
                     <ScrollArea className="h-[300px] w-full">
                         <div className="space-y-1">
                             {installLogs.map((log, i) => (
@@ -99,14 +100,14 @@ export default function InstallProgressStep() {
 
             <CardFooter className="flex justify-between bg-zinc-50 dark:bg-zinc-900/50 px-6 py-4 border-t border-zinc-200 dark:border-zinc-800">
                 <div className="text-sm text-zinc-500">
-                    {installStatus === 'installing' && 'Installation in progress... do not close this window.'}
-                    {installStatus === 'error' && 'Installation failed. Please check the logs.'}
+                    {installStatus === 'installing' && t('in_progress')}
+                    {installStatus === 'error' && t('failed')}
                 </div>
                 <Button
                     disabled={installStatus === 'installing'}
-                    onClick={() => installStatus === 'success' ? setStep(1) : setStep(3)} // Return home or back to keys
+                    onClick={() => installStatus === 'success' ? setStep(1) : setStep(3)}
                 >
-                    {installStatus === 'success' ? 'Go to Dashboard' : 'Finish'}
+                    {installStatus === 'success' ? t('dashboard_btn') : tc('finish')}
                 </Button>
             </CardFooter>
         </Card>

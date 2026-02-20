@@ -1,5 +1,95 @@
 {
+  "Common": {
+    "back": "Atrás",
+    "next": "Siguiente",
+    "continue": "Continuar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "start": "Iniciar instalación",
+    "proceeding": "Procediendo...",
+    "finish": "Finalizar",
+    "success": "Éxito",
+    "failed": "Error",
+    "loading": "Cargando...",
+    "error": "Error"
+  },
   "Index": {
-    "title": "Bienvenido a OpenClaw Web Installer"
+    "title": "Asistente de instalación de OpenClaw",
+    "description": "Siga estos pasos para configurar OpenClaw rápidamente en su entorno preferido."
+  },
+  "Landing": {
+    "version_tag": "v0.1.0 Alpha ya está disponible",
+    "hero_title_1": "Todo lo que su",
+    "hero_title_2": "Agente de IA",
+    "hero_title_3": "necesita.",
+    "hero_desc": "OpenClaw es el marco de código abierto definitivo para desplegar y gestionar agentes de IA autónomos en cualquier entorno.",
+    "start_btn": "Iniciar instalación",
+    "github_btn": "Ver en GitHub",
+    "demo_title": "Demostración interactiva próximamente",
+    "demo_desc": "Experimente el poder de OpenClaw directamente en su navegador.",
+    "features_title": "Construido para flujos de trabajo de IA modernos",
+    "features_desc": "Funciones potentes para ayudarle a construir, desplegar y escalar su capa de automatización de IA con confianza.",
+    "cta_title": "¿Listo para despegar?",
+    "cta_desc": "Únase a más de 1,000 desarrolladores que construyen el futuro de los agentes autónomos con OpenClaw.",
+    "cta_btn": "Inicializar su instancia",
+    "footer": "© 2026 MyClaw. Proyecto comunitario OpenClaw. Todos los derechos reservados.",
+    "feature_ai_title": "Motor central de IA",
+    "feature_ai_desc": "Soporte para múltiples modelos, incluyendo GPT-4, Claude 3 y LLMs locales.",
+    "feature_secure_title": "Seguro por defecto",
+    "feature_secure_desc": "Cifrado de extremo a extremo para todas las comunicaciones y el almacenamiento de claves.",
+    "feature_easy_title": "Instalación fácil",
+    "feature_easy_desc": "Despliegue con un solo clic en AWS, VirtualBox o servidores dedicados.",
+    "feature_console_title": "Consola remota",
+    "feature_console_desc": "Acceso total a la terminal directamente a través de su bot de Telegram o Dashboard.",
+    "feature_bot_title": "Bot multicanal",
+    "feature_bot_desc": "Conéctese a través de Telegram, Discord o chat web con facilidad.",
+    "feature_auto_title": "Automatizaciones inteligentes",
+    "feature_auto_desc": "Programe tareas y cree flujos de trabajo de IA complejos sin programar."
+  },
+  "Environment": {
+    "title": "Seleccionar entorno",
+    "desc": "Elija dónde desea instalar OpenClaw."
+  },
+  "SSH": {
+    "title": "Configuración de conexión SSH",
+    "desc": "Ingrese los detalles de SSH para conectarse a su entorno de destino.",
+    "firewall_title": "Importante: Requisitos del firewall",
+    "firewall_desc": "Si utiliza entornos en la nube como AWS EC2, asegúrese de que los siguientes puertos estén abiertos en sus reglas de entrada:",
+    "port_web": "80/443 (Para herramientas de administración web)",
+    "port_ssh": "Puerto SSH (por defecto 22)",
+    "port_app": "Puertos predeterminados de OpenClaw",
+    "host": "Host / Dirección IP",
+    "port": "Puerto",
+    "user": "Nombre de usuario",
+    "auth_type": "Tipo de autenticación",
+    "password": "Contraseña",
+    "private_key": "Clave privada (Private Key)",
+    "test_btn": "Probar conexión y continuar",
+    "testing": "Probando conexión..."
+  },
+  "Keys": {
+    "title": "Configuración de claves API",
+    "desc": "Ingrese su clave de proveedor de IA y el token del bot de Telegram. Estos son opcionales pero recomendados.",
+    "ai_label": "Clave del proveedor de IA (ej. OpenAI)",
+    "ai_desc": "Utilizada por OpenClaw para alimentar al agente de IA conversacional.",
+    "tg_label": "Token del bot de Telegram",
+    "tg_desc": "Activa la interfaz del bot de Telegram. Cree uno a través de @BotFather.",
+    "test_btn": "Probar claves y continuar",
+    "testing": "Validando claves..."
+  },
+  "Install": {
+    "title": "Instalando OpenClaw...",
+    "title_success": "Instalación completada",
+    "desc": "Espere mientras realizamos las tareas de instalación en su servidor.",
+    "desc_success": "OpenClaw se ha instalado correctamente en su entorno.",
+    "log_terminal": "Registros de terminal",
+    "in_progress": "Instalación en curso... no cierre esta ventana.",
+    "failed": "La instalación falló. Por favor, revise los registros.",
+    "dashboard_btn": "Ir al Dashboard"
+  },
+  "Dialog": {
+    "back_title": "¿Regresar?",
+    "back_desc": "La información ingresada podría perderse. ¿Desea continuar?",
+    "move": "Mover"
   }
 }

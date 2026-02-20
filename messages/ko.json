@@ -1,5 +1,95 @@
 {
+  "Common": {
+    "back": "이전",
+    "next": "다음",
+    "continue": "계속",
+    "cancel": "취소",
+    "confirm": "확인",
+    "start": "설치 시작",
+    "proceeding": "진행 중...",
+    "finish": "완료",
+    "success": "성공",
+    "failed": "실패",
+    "loading": "로딩 중...",
+    "error": "오류"
+  },
   "Index": {
-    "title": "OpenClaw 웹 인스톨러에 오신 것을 환영합니다"
+    "title": "OpenClaw 설치 마법사",
+    "description": "단계별 안내에 따라 원하는 환경에 OpenClaw를 신속하게 설치하세요."
+  },
+  "Landing": {
+    "version_tag": "v0.1.0 알파 버전 출시",
+    "hero_title_1": "당신의",
+    "hero_title_2": "AI 에이전트",
+    "hero_title_3": "를 위한 모든 것.",
+    "hero_desc": "OpenClaw는 어떤 환경에서든 자율 AI 에이전트를 배포하고 관리할 수 있는 궁극의 오픈소스 프레임워크입니다.",
+    "start_btn": "설치 시작하기",
+    "github_btn": "GitHub에서 보기",
+    "demo_title": "인터랙티브 데모 준비 중",
+    "demo_desc": "브라우저에서 OpenClaw의 강력함을 직접 체험해 보세요.",
+    "features_title": "현대적인 AI 워크플로우를 위한 설계",
+    "features_desc": "AI 자동화 레이어를 자신 있게 구축, 배포 및 확장할 수 있도록 도와주는 강력한 기능들입니다.",
+    "cta_title": "시작할 준비가 되셨나요?",
+    "cta_desc": "OpenClaw와 함께 자율 에이전트의 미래를 만들어가는 1,000명 이상의 개발자와 함께하세요.",
+    "cta_btn": "인스턴스 초기화",
+    "footer": "© 2026 MyClaw. OpenClaw 커뮤니티 프로젝트. 모든 권리 보유.",
+    "feature_ai_title": "AI 코어 엔진",
+    "feature_ai_desc": "GPT-4, Claude 3 및 로컬 LLM을 포함한 멀티 모델 지원.",
+    "feature_secure_title": "기능적 보안",
+    "feature_secure_desc": "모든 통신 및 키 저장소에 대한 종단 간 암호화.",
+    "feature_easy_title": "간편한 설치",
+    "feature_easy_desc": "AWS, VirtualBox 또는 베어 메탈 서버에 한 번의 클릭으로 배포.",
+    "feature_console_title": "원격 콘솔",
+    "feature_console_desc": "텔레그램 봇이나 대시보드를 통해 직접 전체 터미널 액세스 가능.",
+    "feature_bot_title": "멀티 채널 봇",
+    "feature_bot_desc": "텔레그램, 디스코드 또는 웹 채팅을 간편하게 연결.",
+    "feature_auto_title": "스마트 자동화",
+    "feature_auto_desc": "코딩 없이 작업 예약 및 복잡한 AI 워크플로우 생성."
+  },
+  "Environment": {
+    "title": "환경 선택",
+    "desc": "OpenClaw를 설치할 환경을 선택해 주세요."
+  },
+  "SSH": {
+    "title": "SSH 접속 설정",
+    "desc": "대상 환경에 접속하기 위한 SSH 상세 정보를 입력하세요.",
+    "firewall_title": "중요: 방화벽 설정 안내",
+    "firewall_desc": "AWS EC2 등 클라우드를 사용하는 경우, 인바운드 규칙에서 다음 포트가 개방되었는지 확인하세요:",
+    "port_web": "80/443 (웹 관리도구)",
+    "port_ssh": "SSH 포트 (기본 22)",
+    "port_app": "OpenClaw 기본 포트",
+    "host": "호스트 / IP 주소",
+    "port": "포트",
+    "user": "사용자명",
+    "auth_type": "인증 방식",
+    "password": "비밀번호",
+    "private_key": "개인키 (Private Key)",
+    "test_btn": "접속 테스트 및 계속",
+    "testing": "접속 테스트 중..."
+  },
+  "Keys": {
+    "title": "API 키 설정",
+    "desc": "AI 공급자 키와 텔레그램 봇 토큰을 입력하세요. 선택 사항이지만 권장됩니다.",
+    "ai_label": "AI 공급자 키 (예: OpenAI)",
+    "ai_desc": "OpenClaw가 대화형 AI 에이전트를 구동하는 데 사용됩니다.",
+    "tg_label": "텔레그램 봇 토큰",
+    "tg_desc": "텔레그램 봇 인터페이스를 활성화합니다. @BotFather를 통해 생성하세요.",
+    "test_btn": "키 테스트 및 계속",
+    "testing": "키 유효성 검사 중..."
+  },
+  "Install": {
+    "title": "OpenClaw 설치 중...",
+    "title_success": "설치 완료",
+    "desc": "서버에서 설치 작업이 진행되는 동안 잠시만 기다려 주세요.",
+    "desc_success": "OpenClaw가 사용자 환경에 성공적으로 설치되었습니다.",
+    "log_terminal": "터미널 로그",
+    "in_progress": "설치가 진행 중입니다. 이 창을 닫지 마세요.",
+    "failed": "설치에 실패했습니다. 로그를 확인해 주세요.",
+    "dashboard_btn": "대시보드로 이동"
+  },
+  "Dialog": {
+    "back_title": "이전 단계로 이동하시겠습니까?",
+    "back_desc": "입력하신 정보가 초기화될 수 있습니다. 계속하시겠습니까?",
+    "move": "이동"
   }
 }

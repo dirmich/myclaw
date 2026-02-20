@@ -24,7 +24,7 @@ export default function MainPage() {
         <>
           <h1 className="text-3xl font-bold tracking-tight mb-2 text-center">{t('title')}</h1>
           <p className="text-zinc-500 mb-8 max-w-lg text-center">
-            Follow these steps to quickly get OpenClaw running on your preferred environment.
+            {t('description')}
           </p>
           <InstallationStepper currentStep={currentStep} />
         </>

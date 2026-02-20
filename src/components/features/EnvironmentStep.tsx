@@ -9,11 +9,12 @@ import { Label } from '@/components/ui/label';
 import { useInstallStore } from '@/store/useInstallStore';
 
 export default function EnvironmentStep() {
-    const t = useTranslations('Index');
-    const { environment, setEnvironment, setStep } = useInstallStore();
+    const t = useTranslations('Environment');
+    const tc = useTranslations('Common');
+    const { currentStep, setStep, environment: selectedValue, setEnvironment } = useInstallStore();
 
     const handleNext = () => {
-        if (environment) {
+        if (selectedValue) {
             setStep(2);
         }
     };
@@ -22,20 +23,20 @@ export default function EnvironmentStep() {
         <>
             <h1 className="text-3xl font-bold tracking-tight mb-2 text-center">{t('title')}</h1>
             <p className="text-zinc-500 mb-8 max-w-lg text-center">
-                Follow these steps to quickly get OpenClaw running on your preferred environment.
+                {useTranslations('Index')('description')}
             </p>
 
             <InstallationStepper currentStep={1} />
 
             <Card className="w-full mt-6 shadow-sm border-zinc-200 dark:border-zinc-800">
                 <CardHeader>
-                    <CardTitle>Select Installation Environment</CardTitle>
+                    <CardTitle>{t('title')}</CardTitle>
                     <CardDescription>
-                        Choose the target environment where OpenClaw will be installed and executed.
+                        {t('desc')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <RadioGroup onValueChange={setEnvironment} value={environment} className="grid grid-cols-1 md:grid-cols-3 gap-4 border-none">
+                    <RadioGroup onValueChange={setEnvironment} value={selectedValue} className="grid grid-cols-1 md:grid-cols-3 gap-4 border-none">
 
                         {/* Option 1: VirtualBox */}
                         <div>
@@ -52,8 +53,8 @@ export default function EnvironmentStep() {
                                     </svg>
                                 </div>
                                 <div className="space-y-1 text-center">
-                                    <p className="font-semibold">Local VirtualBox</p>
-                                    <p className="text-xs text-muted-foreground">Setup natively on a local Linux VM</p>
+                                    <p className="font-semibold text-sm">Local VirtualBox</p>
+                                    <p className="text-[10px] text-muted-foreground">Setup natively on a local Linux VM</p>
                                 </div>
                             </Label>
                         </div>
@@ -71,8 +72,8 @@ export default function EnvironmentStep() {
                                     </svg>
                                 </div>
                                 <div className="space-y-1 text-center">
-                                    <p className="font-semibold">AWS EC2</p>
-                                    <p className="text-xs text-muted-foreground">Install on a remote EC2 Compute Instance</p>
+                                    <p className="font-semibold text-sm">AWS EC2</p>
+                                    <p className="text-[10px] text-muted-foreground">Install on a remote EC2 Compute Instance</p>
                                 </div>
                             </Label>
                         </div>
@@ -92,8 +93,8 @@ export default function EnvironmentStep() {
                                     </svg>
                                 </div>
                                 <div className="space-y-1 text-center">
-                                    <p className="font-semibold">Mac Mini / macOS</p>
-                                    <p className="text-xs text-muted-foreground">Local installation for Apple Silicon or Intel</p>
+                                    <p className="font-semibold text-sm">Mac Mini / macOS</p>
+                                    <p className="text-[10px] text-muted-foreground">Local installation for Apple Silicon or Intel</p>
                                 </div>
                             </Label>
                         </div>
@@ -103,10 +104,10 @@ export default function EnvironmentStep() {
                 <CardFooter className="flex justify-end bg-zinc-50 dark:bg-zinc-900/50 px-6 py-4 mt-4 border-t border-zinc-200 dark:border-zinc-800">
                     <Button
                         onClick={handleNext}
-                        disabled={!environment}
+                        disabled={!selectedValue}
                         className="px-8 shadow-md"
                     >
-                        Continue
+                        {tc('continue')}
                     </Button>
                 </CardFooter>
             </Card>
