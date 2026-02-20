@@ -48,10 +48,10 @@ src/
 ## 구현 순서
 
 ### Phase 1: 프로젝트 초기화 ⏳
-- [ ] Bun + Next.js 14 프로젝트 생성
-- [ ] Tailwind CSS 설정
-- [ ] shadcn/ui 설치 및 기본 컴포넌트(button, input, form, card, step 등) 추가
-- [ ] 다국어(i18n) 설정
+- [x] Bun + Next.js 14 프로젝트 생성
+- [x] Tailwind CSS 설정
+- [x] shadcn/ui 설치 및 기본 컴포넌트(button, input, form, card, step 등) 추가
+- [x] 다국어(i18n) 설정
 
 ### Phase 2: UI 레이아웃 및 컨텍스트 📋
 - [ ] 다국어 언어 선택기 및 공통 헤더
@@ -75,10 +75,10 @@ src/
 ## 진행 상황
 
 ### 현재 작업
-- 작업 중: Phase 1 대기
-- 다음 작업: Phase 1 프로젝트 초기화 진행
+- 작업 중: Phase 2. UI 레이아웃 및 컨텍스트
+- 다음 작업: 다국어 언어 선택기 및 공통 헤더 구현
 
 ### 통계
-- 완료: 0/11
-- 진행률: 0%
+- 완료: 4/11
+- 진행률: 36%
 - 테스트 커버리지: 0%
