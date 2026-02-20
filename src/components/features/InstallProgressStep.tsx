@@ -54,25 +54,22 @@ export default function InstallProgressStep() {
 
             if (data.success) {
                 // Display logs from API one by one for effect
-                for (const stage of data.stages) {
-                    setInstallProgress(stage.progress);
-                    addInstallLog(stage.log);
-                    // Minimal delay just to let the UI update smoothly
-                    await new Promise(resolve => setTimeout(resolve, 200));
+                if (data.stages && Array.isArray(data.stages)) {
+                    for (const stage of data.stages) {
+                        setInstallProgress(stage.progress);
+                        addInstallLog(stage.log);
+                        // Minimal delay just to let the UI update smoothly
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
                 }
-
-                // Final Launch Phase
-                setInstallProgress(95);
-                addInstallLog(`[INFO] ${t('launching')}`);
-                await new Promise(resolve => setTimeout(resolve, 2000));
-
-                addInstallLog(`[STDOUT] OpenClaw service started successfully.`);
-                addInstallLog(`[INFO] Web Admin is now accessible at http://${sshConfig.host || 'localhost'}`);
 
                 setInstallProgress(100);
                 setInstallStatus('success');
             } else {
                 setInstallStatus('error');
+                if (data.stages && Array.isArray(data.stages)) {
+                    data.stages.forEach((s: any) => addInstallLog(s.log));
+                }
                 addInstallLog(`[ERROR] ${data.message || t('failed')}`);
             }
         } catch (error) {

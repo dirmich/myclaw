@@ -26,35 +26,70 @@ export async function POST(request: Request) {
         await ssh.connect(connConfig);
 
         const logs: { progress: number; log: string }[] = [];
-        const addLog = (progress: number, log: string) => logs.push({ progress, log });
+        const addLog = (progress: number, log: string) => {
+            console.log(`[INSTALL LOG] ${log}`);
+            logs.push({ progress, log });
+        };
 
-        addLog(10, 'Connected to remote server. Starting installation...');
+        addLog(10, 'Connection established. Starting real installation...');
 
-        // 1. Run the installation script
-        // We use -s -- --no-onboard if supported, or just the basic command.
-        // Given the script content, it seems to handle non-TTY by skipping onboard.
-        const installResult = await ssh.execCommand('curl -fsSL https://openclaw.ai/install.sh | bash -s -- --no-onboard');
-        addLog(50, `Installation output: ${installResult.stdout}`);
-        if (installResult.stderr && !installResult.stdout) {
-            addLog(50, `Installation error: ${installResult.stderr}`);
+        // 1. Run the installation script with sudo support
+        // We use sudo -S to pass the password to the prompt if needed.
+        const installCmd = 'curl -fsSL https://openclaw.ai/install.sh | bash -s -- --no-onboard';
+
+        let finalCmd = installCmd;
+        let execOptions: any = {};
+
+        if (sshConfig.authType === 'password') {
+            // Use sudo -E to preserve environment, -S to read password from stdin
+            // Actually, the install.sh itself calls sudo internally.
+            // To handle that, we can try to run the WHOLE script with sudo if the user isn't root.
+            finalCmd = `echo "${sshConfig.password}" | sudo -S bash -c "${installCmd.replace(/"/g, '\\"')}"`;
+        } else {
+            // For key-based, we hope sudo is passwordless or already root
+            finalCmd = `bash -c "${installCmd.replace(/"/g, '\\"')}"`;
         }
 
-        // 2. Configure Providers
+        addLog(20, 'Executing OpenClaw installation script...');
+        const installResult = await ssh.execCommand(finalCmd);
+
+        if (installResult.stdout) {
+            installResult.stdout.split('\n').filter(l => l.trim()).forEach(l => addLog(50, `[STDOUT] ${l}`));
+        }
+        if (installResult.stderr) {
+            installResult.stderr.split('\n').filter(l => l.trim()).forEach(l => addLog(50, `[STDERR] ${l}`));
+        }
+
+        if (installResult.code !== 0) {
+            throw new Error(`Installation failed with exit code ${installResult.code}`);
+        }
+
+        // 2. Verify Installation
+        addLog(60, 'Verifying installation...');
+        const verifyResult = await ssh.execCommand('ls -l $HOME/.local/bin/openclaw');
+        if (verifyResult.code !== 0) {
+            throw new Error('Verification failed: openclaw binary not found in ~/.local/bin/');
+        }
+        addLog(65, 'Verification successful: openclaw binary found.');
+
+        // 3. Configure Providers
+        const openclawBin = '$HOME/.local/bin/openclaw';
+
         if (telegramToken) {
             addLog(70, 'Configuring Telegram provider...');
-            // Try to find the openclaw binary. The script says it installs to ~/.local/bin/openclaw
-            const tgResult = await ssh.execCommand(`$HOME/.local/bin/openclaw providers add --provider telegram --token "${telegramToken}"`);
-            addLog(75, tgResult.stdout || tgResult.stderr || 'Telegram provider configured.');
+            const tgResult = await ssh.execCommand(`"${openclawBin}" providers add --provider telegram --token "${telegramToken}"`);
+            if (tgResult.stdout) addLog(75, tgResult.stdout);
+            if (tgResult.stderr) addLog(75, `[STDERR] ${tgResult.stderr}`);
         }
 
         if (aiKey) {
             addLog(85, 'Configuring AI provider (OpenAI)...');
-            // Assuming OpenAI as default for now as per user's example
-            const aiResult = await ssh.execCommand(`$HOME/.local/bin/openclaw providers add --provider openai --token "${aiKey}"`);
-            addLog(90, aiResult.stdout || aiResult.stderr || 'AI provider configured.');
+            const aiResult = await ssh.execCommand(`"${openclawBin}" providers add --provider openai --token "${aiKey}"`);
+            if (aiResult.stdout) addLog(90, aiResult.stdout);
+            if (aiResult.stderr) addLog(90, `[STDERR] ${aiResult.stderr}`);
         }
 
-        // 3. Finalize
+        // 4. Finalize
         addLog(100, 'Installation and configuration completed successfully!');
 
         await ssh.dispose();
@@ -62,9 +97,13 @@ export async function POST(request: Request) {
     } catch (error: any) {
         console.error('Installation Error:', error);
         if (ssh) await ssh.dispose();
+        const errorLogs = [
+            { progress: 100, log: `[ERROR] ${error.message || 'Installation failed.'}` }
+        ];
         return NextResponse.json({
             success: false,
-            message: error.message || 'Installation failed. Check your server environment and try again.'
+            message: error.message || 'Installation failed.',
+            stages: errorLogs
         }, { status: 500 });
     }
 }
