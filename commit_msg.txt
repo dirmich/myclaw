@@ -1,7 +1,8 @@
-feat: 설치 가상화 완료 후 OpenClaw 자동 실행 및 대시보드 리다이렉션 기능 추가
+feat: 실제 SSH 연결을 통한 OpenClaw 설치 및 자동 설정 기능 구현
 
-- [InstallProgressStep] 설치 완료 직후 OpenClaw 서비스 시작(Start-up) 시뮬레이션 로그 추가
-- [InstallProgressStep] "대시보드 접속하기" 버튼 구현: 설정된 호스트 IP(SSH 호스트)의 웹 주소로 자동 연결
-- [Translations] 모든 언어(KO, EN, JP, CN, ES)에 실행 상태 및 대시보드 접속 관련 메시지 추가
-- [Docs] 진행 상황에 맞춰 implementation_plan.md, task.md, walkthrough.md 업데이트
-- 전체 빌드 및 다국어 렌더링 검증 완료
+- [Backend] node-ssh 패키지를 사용하여 실시간 SSH 접속 테스트 및 명령어 실행 기능 상용화
+- [API] `curl -fsSL https://openclaw.ai/install.sh | bash` 명령어를 통한 실제 원격 설치 로직 적용
+- [API] 설치 완료 후 `openclaw providers add` CLI 명령어를 사용해 AI 키 및 텔레그램 토큰 자동 설정
+- [Frontend] 설치 시작 시 저장소에 저장된 모든 설정값(SSH, API keys)을 API로 전달하도록 개선
+- [Docs] 실제 제품 수준의 설치 로직 반영에 따른 task.md 및 walkthrough.md 업데이트
+- 전체 빌드 및 종속성(node-ssh) 추가 완료

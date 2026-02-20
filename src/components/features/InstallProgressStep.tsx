@@ -15,6 +15,8 @@ export default function InstallProgressStep() {
     const {
         environment,
         sshConfig,
+        aiKey,
+        telegramToken,
         installStatus,
         installProgress,
         installLogs,
@@ -46,15 +48,17 @@ export default function InstallProgressStep() {
             const res = await fetch('/api/install', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ environment, sshConfig }),
+                body: JSON.stringify({ environment, sshConfig, aiKey, telegramToken }),
             });
             const data = await res.json();
 
             if (data.success) {
+                // Display logs from API one by one for effect
                 for (const stage of data.stages) {
-                    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
                     setInstallProgress(stage.progress);
-                    addInstallLog(`[STDOUT] ${stage.log}`);
+                    addInstallLog(stage.log);
+                    // Minimal delay just to let the UI update smoothly
+                    await new Promise(resolve => setTimeout(resolve, 200));
                 }
 
                 // Final Launch Phase
