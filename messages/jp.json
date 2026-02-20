@@ -85,7 +85,8 @@
     "log_terminal": "ターミナルログ",
     "in_progress": "インストールが進行中です。このウィンドウを閉じないでください。",
     "failed": "インストールに失敗しました。ログを確認してください。",
-    "dashboard_btn": "ダッシュボードへ移動"
+    "launching": "OpenClawを起動中...",
+    "dashboard_btn": "ダッシュボードにアクセス"
   },
   "Dialog": {
     "back_title": "戻りますか？",

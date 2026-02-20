@@ -85,7 +85,8 @@
     "log_terminal": "Terminal Logs",
     "in_progress": "Installation in progress... do not close this window.",
     "failed": "Installation failed. Please check the logs.",
-    "dashboard_btn": "Go to Dashboard"
+    "launching": "Launching OpenClaw...",
+    "dashboard_btn": "Access Dashboard"
   },
   "Dialog": {
     "back_title": "Go back?",

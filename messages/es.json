@@ -85,7 +85,8 @@
     "log_terminal": "Registros de terminal",
     "in_progress": "Instalación en curso... no cierre esta ventana.",
     "failed": "La instalación falló. Por favor, revise los registros.",
-    "dashboard_btn": "Ir al Dashboard"
+    "launching": "Iniciando OpenClaw...",
+    "dashboard_btn": "Acceder al Panel"
   },
   "Dialog": {
     "back_title": "¿Regresar?",

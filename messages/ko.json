@@ -85,7 +85,8 @@
     "log_terminal": "터미널 로그",
     "in_progress": "설치가 진행 중입니다. 이 창을 닫지 마세요.",
     "failed": "설치에 실패했습니다. 로그를 확인해 주세요.",
-    "dashboard_btn": "대시보드로 이동"
+    "launching": "OpenClaw 실행 중...",
+    "dashboard_btn": "대시보드 접속하기"
   },
   "Dialog": {
     "back_title": "이전 단계로 이동하시겠습니까?",

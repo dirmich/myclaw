@@ -85,7 +85,8 @@
     "log_terminal": "终端日志",
     "in_progress": "安装正在进行中，请勿关闭此窗口。",
     "failed": "安装失败，请检查日志。",
-    "dashboard_btn": "前往仪表板"
+    "launching": "正在启动 OpenClaw...",
+    "dashboard_btn": "访问控制面板"
   },
   "Dialog": {
     "back_title": "返回上一步？",

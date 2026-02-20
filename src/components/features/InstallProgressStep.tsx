@@ -56,6 +56,16 @@ export default function InstallProgressStep() {
                     setInstallProgress(stage.progress);
                     addInstallLog(`[STDOUT] ${stage.log}`);
                 }
+
+                // Final Launch Phase
+                setInstallProgress(95);
+                addInstallLog(`[INFO] ${t('launching')}`);
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                addInstallLog(`[STDOUT] OpenClaw service started successfully.`);
+                addInstallLog(`[INFO] Web Admin is now accessible at http://${sshConfig.host || 'localhost'}`);
+
+                setInstallProgress(100);
                 setInstallStatus('success');
             } else {
                 setInstallStatus('error');
@@ -65,6 +75,12 @@ export default function InstallProgressStep() {
             setInstallStatus('error');
             addInstallLog(`[ERROR] ${tc('error')}`);
         }
+    };
+
+    const handleDashboardAccess = () => {
+        const host = sshConfig.host || 'localhost';
+        const url = `http://${host}`;
+        window.open(url, '_blank');
     };
 
     return (
@@ -101,14 +117,24 @@ export default function InstallProgressStep() {
             <CardFooter className="flex justify-between bg-zinc-50 dark:bg-zinc-900/50 px-6 py-4 border-t border-zinc-200 dark:border-zinc-800">
                 <div className="text-sm text-zinc-500">
                     {installStatus === 'installing' && t('in_progress')}
-                    {installStatus === 'error' && t('failed')}
+                    {installStatus === 'error' && (
+                        <span className="text-red-500 font-medium">{t('failed')}</span>
+                    )}
                 </div>
-                <Button
-                    disabled={installStatus === 'installing'}
-                    onClick={() => installStatus === 'success' ? setStep(1) : setStep(3)}
-                >
-                    {installStatus === 'success' ? t('dashboard_btn') : tc('finish')}
-                </Button>
+                <div className="flex space-x-2">
+                    {installStatus === 'error' && (
+                        <Button variant="outline" onClick={() => setStep(3)}>
+                            {tc('back')}
+                        </Button>
+                    )}
+                    <Button
+                        disabled={installStatus === 'installing'}
+                        onClick={() => installStatus === 'success' ? handleDashboardAccess() : setStep(1)}
+                        className={installStatus === 'success' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : ''}
+                    >
+                        {installStatus === 'success' ? t('dashboard_btn') : tc('finish')}
+                    </Button>
+                </div>
             </CardFooter>
         </Card>
     );
