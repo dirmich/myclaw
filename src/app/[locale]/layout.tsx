@@ -21,6 +21,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
+import Header from '@/components/features/Header';
 
 export default async function RootLayout({
   children,
@@ -44,10 +45,13 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased text-zinc-900 bg-zinc-50 dark:bg-zinc-900 dark:text-zinc-50`}
       >
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <Header />
+          <main className="pt-20 pb-10 min-h-screen">
+            {children}
+          </main>
         </NextIntlClientProvider>
       </body>
     </html>
