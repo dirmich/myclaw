@@ -18,6 +18,7 @@ interface InstallState {
     installStatus: 'idle' | 'installing' | 'success' | 'error';
     installProgress: number;
     installLogs: string[];
+    isWizardStarted: boolean;
     setStep: (step: number) => void;
     setEnvironment: (env: string) => void;
     setSSHConfig: (config: Partial<SSHConfig>) => void;
@@ -25,6 +26,7 @@ interface InstallState {
     setInstallStatus: (status: 'idle' | 'installing' | 'success' | 'error') => void;
     setInstallProgress: (progress: number) => void;
     addInstallLog: (log: string) => void;
+    startWizard: () => void;
 }
 
 export const useInstallStore = create<InstallState>((set) => ({
@@ -41,6 +43,7 @@ export const useInstallStore = create<InstallState>((set) => ({
     installStatus: 'idle',
     installProgress: 0,
     installLogs: [],
+    isWizardStarted: false,
     setStep: (step) => set({ currentStep: step }),
     setEnvironment: (env) => set({ environment: env }),
     setSSHConfig: (config) =>
@@ -49,4 +52,5 @@ export const useInstallStore = create<InstallState>((set) => ({
     setInstallStatus: (status) => set({ installStatus: status }),
     setInstallProgress: (progress) => set({ installProgress: progress }),
     addInstallLog: (log) => set((state) => ({ installLogs: [...state.installLogs, log] })),
+    startWizard: () => set({ isWizardStarted: true }),
 }));

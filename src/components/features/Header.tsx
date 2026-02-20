@@ -7,6 +7,9 @@ export default function Header() {
                 <div className="flex items-center space-x-2">
                     {/* Logo Placeholder */}
                     <div className="font-bold text-xl tracking-tighter">MyClaw</div>
+                    <div className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                        v0.1.0-alpha
+                    </div>
                     <div className="text-sm text-zinc-500 hidden sm:block">OpenClaw Web Installer</div>
                 </div>
 

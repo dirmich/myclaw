@@ -5,12 +5,17 @@ import EnvironmentStep from '@/components/features/EnvironmentStep';
 import SSHConnectionStep from '@/components/features/SSHConnectionStep';
 import KeysSetupStep from '@/components/features/KeysSetupStep';
 import InstallProgressStep from '@/components/features/InstallProgressStep';
+import LandingPage from '@/components/features/LandingPage';
 import InstallationStepper from '@/components/features/InstallationStepper';
 import { useTranslations } from 'next-intl';
 
 export default function MainPage() {
-  const { currentStep } = useInstallStore();
+  const { currentStep, isWizardStarted } = useInstallStore();
   const t = useTranslations('Index');
+
+  if (!isWizardStarted) {
+    return <LandingPage />;
+  }
 
   return (
     <div className="container mx-auto max-w-4xl px-4 flex flex-col items-center">

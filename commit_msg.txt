@@ -1,10 +1,7 @@
-feat: Phase 5 설치 진행 UI 및 글로벌 다이얼로그 시스템 구현 완료
+feat: 세련된 디자인의 랜딩 페이지 구현 및 프로젝트 버전 정보 헤더 추가
 
-- 전역 `GlobalDialog` (alert/confirm) 시스템 추가 (shadcn/ui AlertDialog 기반)
-- 각 단계별 `Back` 버튼 클릭 시 초기화 방보 확인 다이얼로그 적용
-- SSH 설정 단계에 방화벽 포트(80, 443 등) 개방 안내 추가
-- Phase 5: 설치 진행(`InstallProgressStep`) 컴포넌트 및 모의 API 구현
-- 터미널 로그 뷰어 및 프로그레스바 구현
-- missing shadcn 컴포넌트 (progress, scroll-area, alert-dialog) 추가
-- 프로젝트 전체 빌드 및 타입 체크 확인 완료
-- `plan.md` 및 `task.md` 최종 업데이트 (목표 달성 100%)
+- 서비스 주요 기능(Features)을 포함한 고품질 랜딩 페이지 구현
+- 헤더에 현재 버전 정보(v0.1.0-alpha) 및 뱃지 추가
+- Zustand 스토어에 `isWizardStarted` 상태를 추가하여 랜딩과 마법사 화면 전환 로직 구현
+- Lucide-react 아이콘을 활용하여 시각적 요소 강화
+- 전체 프로젝트 빌드 및 상태 업데이트 완료 (Phase 6 완료)
