@@ -46,3 +46,7 @@ Thumbs.db
 # Test directories
 test/
 test-*/
+
+# AI Rules & Prompts
+.claude/
+need.md
