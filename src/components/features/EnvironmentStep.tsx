@@ -11,7 +11,7 @@ import { useInstallStore } from '@/store/useInstallStore';
 export default function EnvironmentStep() {
     const t = useTranslations('Environment');
     const tc = useTranslations('Common');
-    const { currentStep, setStep, environment: selectedValue, setEnvironment } = useInstallStore();
+    const { currentStep, setStep, environment: selectedValue, setEnvironment, installType, setInstallType } = useInstallStore();
 
     const handleNext = () => {
         if (selectedValue) {
@@ -100,7 +100,47 @@ export default function EnvironmentStep() {
                         </div>
 
                     </RadioGroup>
+
+                    {/* Minimum Requirements Info Card */}
+                    <div className="mt-8 rounded-lg border border-amber-200 bg-amber-50/50 p-4 dark:border-amber-900/30 dark:bg-amber-950/10">
+                        <div className="flex items-start space-x-3">
+                            <div className="mt-0.5 p-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
+                            </div>
+                            <div className="flex-1">
+                                <h4 className="text-sm font-bold text-amber-900 dark:text-amber-400 mb-2">{t('resources_title')}</h4>
+                                <ul className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                    <li className="flex items-center text-xs text-amber-800 dark:text-amber-500/80">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-amber-400 mr-2" />
+                                        {t('resources_ram')}
+                                    </li>
+                                    <li className="flex items-center text-xs text-amber-800 dark:text-amber-500/80">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-amber-400 mr-2" />
+                                        {t('resources_cpu')}
+                                    </li>
+                                    <li className="flex items-center text-xs text-amber-800 dark:text-amber-500/80">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-amber-400 mr-2" />
+                                        {t('resources_storage')}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </CardContent>
+
+                <div className="px-6 py-4 border-t border-zinc-100 dark:border-zinc-800 bg-blue-50/30 dark:bg-blue-900/10">
+                    <div className="flex items-center space-x-3">
+                        <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V9a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v3.5zM2 12.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5V9a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 0-.5.5v3.5zM12 2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H9a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 1 .5-.5h3zM12 22a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5H9a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h3z" /><path d="M7 11.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zM20 11.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" /><path d="M12 11.5h.01" /><rect width="18" height="12" x="3" y="6" rx="2" /><path d="M7 18h10" /></svg>
+                        </div>
+                        <div>
+                            <CardTitle className="text-sm font-semibold">{t('type_docker')}</CardTitle>
+                            <CardDescription className="text-xs">
+                                {t('type_docker_desc')} (Stable)
+                            </CardDescription>
+                        </div>
+                    </div>
+                </div>
                 <CardFooter className="flex justify-end bg-zinc-50 dark:bg-zinc-900/50 px-6 py-4 mt-4 border-t border-zinc-200 dark:border-zinc-800">
                     <Button
                         onClick={handleNext}

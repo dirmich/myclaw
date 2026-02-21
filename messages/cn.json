@@ -48,7 +48,18 @@
   },
   "Environment": {
     "title": "选择环境",
-    "desc": "选择您想要安装 OpenClaw 的位置。"
+    "desc": "请选择您要安装 OpenClaw 的环境。",
+    "resources_title": "最低配置要求",
+    "resources_ram": "内存: 2GB+ (浏览器自动化建议 4GB)",
+    "resources_cpu": "CPU: 2 核+",
+    "resources_storage": "存储空间: 10GB+ 可用空间",
+    "type_title": "选择安装方式",
+    "type_desc": "请选择您喜欢的安装方式。建议使用 Docker。",
+    "type_native": "普通安装",
+    "type_native_desc": "直接在服务器上安装包。（需要 Node.js）",
+    "type_docker": "Docker 安装（推荐）",
+    "type_docker_desc": "在容器环境中运行。这是最稳定且隔离的方式。",
+    "sudo_warning": "在安装过程中，需要 sudo 权限来安装包。"
   },
   "SSH": {
     "title": "SSH 连接设置",
@@ -63,9 +74,17 @@
     "user": "用户名",
     "auth_type": "身份验证类型",
     "password": "密码",
+    "sudo_password": "Sudo 密码 (可选)",
+    "sudo_password_placeholder": "Key 认证时 sudo 权限所需的密码 (如需要)",
+    "sudo_password_guide": "根据服务器设置，即使使用 Key 认证，执行 sudo 时也可能需要密码。如果安装卡住，请在此处输入。",
     "private_key": "私钥 (Private Key)",
     "test_btn": "测试连接并继续",
-    "testing": "正在测试连接..."
+    "testing": "正在测试连接...",
+    "sudo_warning": "提供的账户必须具有 sudo 权限才能进行自动安装。",
+    "host_guide": "输入服务器的IP地址（如：1.2.3.4）或域名（如：myserver.com）。",
+    "user_guide": "要登录的账户名。常用值：'root'、'ubuntu'、'ec2-user'。",
+    "sudo_guide": "安装软件需要管理员权限（sudo）。请确保您的密码正确。",
+    "key_guide": "复制并粘贴用于代替密码的私钥文件（.pem, .key）的内容。"
   },
   "Keys": {
     "title": "API 密钥设置",

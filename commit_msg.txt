@@ -1,7 +1,0 @@
-fix: 실제 SSH 설치 프로세스 및 sudo 권한 핸들링 개선
-
-- [API] `sudo -S` 옵션을 사용하여 원격 서버의 관리자 권한 획득 문제 해결
-- [API] 설치 완료 후 `~/.local/bin/openclaw` 바이너리 존재 유무를 확인하는 검증 단계 추가
-- [API] 설치 실패 시 정확한 종료 코드 및 에러 로그를 반환하도록 로직 강화
-- [Frontend] 가짜 시뮬레이션 로그 및 딜레이 제거, 실제 서버 로그를 정직하게 출력하도록 수정
-- [Docs] Phase 9 작업 내용 반영 (implementation_plan, task, walkthrough)

@@ -48,7 +48,11 @@
   },
   "Environment": {
     "title": "Select Environment",
-    "desc": "Choose where you want to install OpenClaw."
+    "desc": "Please select the environment where you want to install OpenClaw.",
+    "resources_title": "Minimum Requirements",
+    "resources_ram": "RAM: 2GB+ (4GB recommended for browser automation)",
+    "resources_cpu": "CPU: 2 Cores+",
+    "resources_storage": "Storage: 10GB+ of free space"
   },
   "SSH": {
     "title": "SSH Connection Settings",
@@ -63,19 +67,30 @@
     "user": "Username",
     "auth_type": "Authentication Type",
     "password": "Password",
+    "sudo_password": "Sudo Password (Optional)",
+    "sudo_password_placeholder": "Password for sudo privileges (if required for key auth)",
+    "sudo_password_guide": "Depending on server settings, you might need a password for sudo even when using keys. If it hangs, please enter it here.",
     "private_key": "Private Key",
     "test_btn": "Test Connection & Continue",
-    "testing": "Testing Connection..."
+    "testing": "Testing Connection...",
+    "sudo_warning": "The account provided must have sudo privileges for automated installation.",
+    "host_guide": "Enter your server's IP (e.g., 1.2.3.4) or domain name (e.g., myserver.com).",
+    "user_guide": "The account name to log in. Common values: 'root', 'ubuntu', 'ec2-user'.",
+    "sudo_guide": "Administrative privileges (sudo) are required to install software. Please ensure your password is correct.",
+    "key_guide": "Copy and paste the content of your private key file (.pem, .key) used instead of a password."
   },
   "Keys": {
     "title": "API Keys Setup",
     "desc": "Enter your AI Provider Key and Telegram Bot Token. These are optional but recommended.",
-    "ai_label": "AI Provider Key (e.g. OpenAI)",
+    "provider_label": "AI Provider",
+    "ai_label": "API Key",
     "ai_desc": "Used by OpenClaw to power the conversational AI agent.",
+    "model_label": "AI Model",
+    "model_desc": "Select the specific AI model to use for conversations.",
     "tg_label": "Telegram Bot Token",
     "tg_desc": "Enables the Telegram Bot interface. Create one via @BotFather.",
-    "test_btn": "Test Keys & Continue",
-    "testing": "Validating Keys..."
+    "test_btn": "Test Keys & Fetch Models",
+    "testing": "Validating Keys & Loading Models..."
   },
   "Install": {
     "title": "Installing OpenClaw...",

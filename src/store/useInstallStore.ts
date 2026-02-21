@@ -14,15 +14,20 @@ interface InstallState {
     environment: string;
     sshConfig: SSHConfig;
     aiKey: string;
+    aiProvider: string;
+    aiModel: string;
     telegramToken: string;
     installStatus: 'idle' | 'installing' | 'success' | 'error';
     installProgress: number;
     installLogs: string[];
     isWizardStarted: boolean;
+    installType: 'native' | 'docker';
     setStep: (step: number) => void;
     setEnvironment: (env: string) => void;
+    setInstallType: (type: 'native' | 'docker') => void;
     setSSHConfig: (config: Partial<SSHConfig>) => void;
     setKeys: (aiKey: string, telegramToken: string) => void;
+    setAIConfig: (provider: string, model: string) => void;
     setInstallStatus: (status: 'idle' | 'installing' | 'success' | 'error') => void;
     setInstallProgress: (progress: number) => void;
     addInstallLog: (log: string) => void;
@@ -39,16 +44,21 @@ export const useInstallStore = create<InstallState>((set) => ({
         authType: 'password',
     },
     aiKey: '',
+    aiProvider: 'openai',
+    aiModel: '',
     telegramToken: '',
     installStatus: 'idle',
     installProgress: 0,
     installLogs: [],
     isWizardStarted: false,
+    installType: 'docker',
     setStep: (step) => set({ currentStep: step }),
     setEnvironment: (env) => set({ environment: env }),
+    setInstallType: (type) => set({ installType: type }),
     setSSHConfig: (config) =>
         set((state) => ({ sshConfig: { ...state.sshConfig, ...config } })),
     setKeys: (aiKey, telegramToken) => set({ aiKey, telegramToken }),
+    setAIConfig: (aiProvider, aiModel) => set({ aiProvider, aiModel }),
     setInstallStatus: (status) => set({ installStatus: status }),
     setInstallProgress: (progress) => set({ installProgress: progress }),
     addInstallLog: (log) => set((state) => ({ installLogs: [...state.installLogs, log] })),

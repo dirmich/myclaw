@@ -27,9 +27,11 @@ export default function InstallProgressStep() {
     } = useInstallStore();
 
     const scrollRef = useRef<HTMLDivElement>(null);
+    const isStarted = useRef(false);
 
     useEffect(() => {
-        if (installStatus === 'idle') {
+        if (installStatus === 'idle' && !isStarted.current) {
+            isStarted.current = true;
             startInstallation();
         }
     }, []);
@@ -39,6 +41,26 @@ export default function InstallProgressStep() {
             scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }
     }, [installLogs]);
+
+    const [currentStepInfo, setCurrentStepInfo] = useState('');
+
+    useEffect(() => {
+        if (installStatus === 'error') {
+            setCurrentStepInfo('설치 중 오류가 발생했습니다. 로그를 확인해 주세요.');
+        } else if (installProgress < 10) {
+            setCurrentStepInfo('서버에 연결하는 중입니다...');
+        } else if (installProgress < 20) {
+            setCurrentStepInfo('서버 환경을 분석하고 필수 패키지를 확인하고 있습니다.');
+        } else if (installProgress < 60) {
+            setCurrentStepInfo('OpenClaw 핵심 엔진 및 종속성(Node.js, npm 등)을 설치하고 있습니다. 잠시만 기다려 주세요.');
+        } else if (installProgress < 75) {
+            setCurrentStepInfo('설치가 완료되었습니다. 설치된 파일을 검증하는 중입니다.');
+        } else if (installProgress < 100) {
+            setCurrentStepInfo('AI 공급자 및 텔레그램 설정을 원격 서버에 적용하고 있습니다.');
+        } else {
+            setCurrentStepInfo('모든 설치 및 설정이 완료되었습니다!');
+        }
+    }, [installProgress, installStatus]);
 
     const startInstallation = async () => {
         setInstallStatus('installing');
@@ -50,37 +72,53 @@ export default function InstallProgressStep() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ environment, sshConfig, aiKey, telegramToken }),
             });
-            const data = await res.json();
 
-            if (data.success) {
-                // Display logs from API one by one for effect
-                if (data.stages && Array.isArray(data.stages)) {
-                    for (const stage of data.stages) {
-                        setInstallProgress(stage.progress);
-                        addInstallLog(stage.log);
-                        // Minimal delay just to let the UI update smoothly
-                        await new Promise(resolve => setTimeout(resolve, 100));
+            if (!res.body) throw new Error('ReadableStream not supported');
+
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const parts = buffer.split('\n');
+                buffer = parts.pop() || '';
+
+                for (const part of parts) {
+                    if (!part.trim()) continue;
+                    try {
+                        const data = JSON.parse(part);
+                        if (data.progress !== undefined) setInstallProgress(data.progress);
+                        if (data.log) {
+                            addInstallLog(data.log);
+                            // Important: Use the latest state to avoid stale closure issues
+                            if (data.log.includes('[ERROR]')) {
+                                useInstallStore.getState().setInstallStatus('error');
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error parsing stream chunk:', e);
                     }
                 }
+            }
 
+            // Check the LATEST status from the store
+            if (useInstallStore.getState().installStatus !== 'error') {
                 setInstallProgress(100);
                 setInstallStatus('success');
-            } else {
-                setInstallStatus('error');
-                if (data.stages && Array.isArray(data.stages)) {
-                    data.stages.forEach((s: any) => addInstallLog(s.log));
-                }
-                addInstallLog(`[ERROR] ${data.message || t('failed')}`);
             }
-        } catch (error) {
+        } catch (error: any) {
             setInstallStatus('error');
-            addInstallLog(`[ERROR] ${tc('error')}`);
+            addInstallLog(`[ERROR] ${error.message || tc('error')}`);
         }
     };
 
     const handleDashboardAccess = () => {
         const host = sshConfig.host || 'localhost';
-        const url = `http://${host}`;
+        const url = `http://${host}:18789`;
         window.open(url, '_blank');
     };
 
@@ -97,7 +135,12 @@ export default function InstallProgressStep() {
             </CardHeader>
 
             <CardContent className="space-y-6">
-                <Progress value={installProgress} className="h-2" />
+                <div>
+                    <Progress value={installProgress} className="h-2" />
+                    <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 font-medium animate-pulse">
+                        {currentStepInfo}
+                    </p>
+                </div>
 
                 <div className="rounded-md bg-zinc-950 p-4 font-mono text-sm text-zinc-50 border border-zinc-800">
                     <CardTitle className="text-xs mb-2 opacity-50 uppercase tracking-widest">{t('log_terminal')}</CardTitle>

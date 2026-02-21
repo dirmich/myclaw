@@ -31,16 +31,17 @@ const sshSchema = z.object({
     password: z.string().optional(),
     privateKey: z.string().optional(),
 }).refine((data) => {
-    if (data.authType === 'password' && !data.password) {
-        return false;
-    }
-    if (data.authType === 'key' && !data.privateKey) {
-        return false;
-    }
+    if (data.authType === 'password' && !data.password) return false;
     return true;
 }, {
-    message: "Authentication credential is required",
+    message: "Password is required for password authentication",
     path: ["password"],
+}).refine((data) => {
+    if (data.authType === 'key' && !data.privateKey) return false;
+    return true;
+}, {
+    message: "Private key is required for key authentication",
+    path: ["privateKey"],
 });
 
 export default function SSHConnectionStep() {
@@ -50,7 +51,17 @@ export default function SSHConnectionStep() {
     const { currentStep, setStep, setSSHConfig, sshConfig: defaultValues } = useInstallStore();
     const { confirm } = useDialogStore();
     const [isTesting, setIsTesting] = useState(false);
-    const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+    const [testResult, setTestResult] = useState<{
+        success: boolean;
+        message: string;
+        isRoot?: boolean;
+        canSudoWithoutPassword?: boolean;
+    } | null>(null);
+
+    const [sudoPrivilege, setSudoPrivilege] = useState<{
+        isRoot: boolean;
+        canSudoWithoutPassword: boolean;
+    } | null>(null);
 
     const handleBack = () => {
         confirm({
@@ -91,6 +102,10 @@ export default function SSHConnectionStep() {
             setTestResult(data);
 
             if (data.success) {
+                setSudoPrivilege({
+                    isRoot: !!data.isRoot,
+                    canSudoWithoutPassword: !!data.canSudoWithoutPassword
+                });
                 setSSHConfig(values);
                 setTimeout(() => {
                     setStep(3);
@@ -102,6 +117,10 @@ export default function SSHConnectionStep() {
             setIsTesting(false);
         }
     }
+
+    const showSudoPassword = authType === 'key' &&
+        sudoPrivilege?.isRoot === false &&
+        sudoPrivilege?.canSudoWithoutPassword === false;
 
     return (
         <Card className="w-full mt-6 shadow-sm border-zinc-200 dark:border-zinc-800">
@@ -115,12 +134,21 @@ export default function SSHConnectionStep() {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     <CardContent className="space-y-4">
+                        <Alert className="bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-800">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shield-alert text-amber-600"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" /><path d="M12 8v4" /><path d="M12 16h.01" /></svg>
+                            <AlertTitle className="text-amber-800 dark:text-amber-300">리눅스 초보자를 위한 Sudo 권한 안내</AlertTitle>
+                            <AlertDescription className="text-amber-700 dark:text-amber-400 text-xs">
+                                {t('sudo_warning')}
+                                <p className="mt-1 font-semibold">{t('sudo_guide')}</p>
+                            </AlertDescription>
+                        </Alert>
+
                         <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-info text-blue-600"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
                             <AlertTitle className="text-blue-800 dark:text-blue-300">{t('firewall_title')}</AlertTitle>
-                            <AlertDescription className="text-blue-700 dark:text-blue-400 text-xs">
+                            <AlertDescription className="text-blue-700 dark:text-blue-400 text-xs text-balance">
                                 {t('firewall_desc')}
-                                <ul className="list-disc list-inside mt-1 ml-1">
+                                <ul className="list-disc list-inside mt-1 ml-1 opacity-80">
                                     <li>{t('port_web')}</li>
                                     <li>{t('port_ssh')}</li>
                                     <li>{t('port_app')}</li>
@@ -138,6 +166,9 @@ export default function SSHConnectionStep() {
                                         <FormControl>
                                             <Input placeholder="192.168.1.100 or example.com" {...field} />
                                         </FormControl>
+                                        <FormDescription className="text-[11px] leading-tight">
+                                            {t('host_guide')}
+                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -166,6 +197,9 @@ export default function SSHConnectionStep() {
                                     <FormControl>
                                         <Input placeholder="root, ubuntu, etc." {...field} />
                                     </FormControl>
+                                    <FormDescription className="text-[11px] leading-tight">
+                                        {t('user_guide')}
+                                    </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -221,23 +255,52 @@ export default function SSHConnectionStep() {
                                 )}
                             />
                         ) : (
-                            <FormField
-                                control={form.control}
-                                name="privateKey"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('private_key')}</FormLabel>
-                                        <FormControl>
-                                            <textarea
-                                                className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm font-mono placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                                                placeholder="-----BEGIN RSA PRIVATE KEY-----..."
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
+                            <>
+                                <FormField
+                                    control={form.control}
+                                    name="privateKey"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>{t('private_key')}</FormLabel>
+                                            <FormControl>
+                                                <textarea
+                                                    className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm font-mono placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                                                    placeholder="-----BEGIN RSA PRIVATE KEY-----..."
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormDescription className="text-[11px] leading-tight">
+                                                {t('key_guide')}
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                {showSudoPassword && (
+                                    <FormField
+                                        control={form.control}
+                                        name="password"
+                                        render={({ field }) => (
+                                            <FormItem className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                                <FormLabel className="text-amber-600 dark:text-amber-400">{t('sudo_password')}</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="password"
+                                                        placeholder={t('sudo_password_placeholder')}
+                                                        {...field}
+                                                        className="border-amber-200 focus-visible:ring-amber-500"
+                                                    />
+                                                </FormControl>
+                                                <FormDescription className="text-[11px] leading-tight text-amber-600/80 dark:text-amber-400/80">
+                                                    {t('sudo_password_guide')}
+                                                </FormDescription>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
                                 )}
-                            />
+                            </>
                         )}
 
                         {testResult && (

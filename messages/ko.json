@@ -48,7 +48,11 @@
   },
   "Environment": {
     "title": "환경 선택",
-    "desc": "OpenClaw를 설치할 환경을 선택해 주세요."
+    "desc": "OpenClaw를 설치할 환경을 선택해 주세요.",
+    "resources_title": "권장 최소 사양",
+    "resources_ram": "메모리: 2GB 이상 (브라우저 사용 시 4GB 권장)",
+    "resources_cpu": "CPU: 2 코어 이상",
+    "resources_storage": "저장공간: 10GB 이상의 여유 공간"
   },
   "SSH": {
     "title": "SSH 접속 설정",
@@ -63,19 +67,30 @@
     "user": "사용자명",
     "auth_type": "인증 방식",
     "password": "비밀번호",
+    "sudo_password": "Sudo 비밀번호 (선택 사항)",
+    "sudo_password_placeholder": "Key 인증 시 sudo 권한용 비밀번호 (필요한 경우)",
+    "sudo_password_guide": "서버 설정에 따라 Key 인증을 사용하더라도 sudo 실행 시 비밀번호가 필요할 수 있습니다. 계속 멈춘다면 여기에 비밀번호를 입력해 주세요.",
     "private_key": "개인키 (Private Key)",
     "test_btn": "접속 테스트 및 계속",
-    "testing": "접속 테스트 중..."
+    "testing": "접속 테스트 중...",
+    "sudo_warning": "입력하신 계정이 sudo 권한을 가지고 있어야 자동 설치가 가능합니다.",
+    "host_guide": "서버의 IP 주소(예: 1.2.3.4) 또는 도메인 주소(예: myserver.com)를 입력하세요.",
+    "user_guide": "서버에 접속할 계정 이름을 입력하세요. 보통 'root', 'ubuntu', 'ec2-user' 등이 사용됩니다.",
+    "sudo_guide": "관리자 권한(sudo)은 프로그램 설치를 위해 반드시 필요합니다. 비밀번호를 요구할 때 사용되므로 정확히 입력해 주세요.",
+    "key_guide": "비밀번호 대신 사용할 개인키 파일(.pem, .key)의 내용을 복사해서 입력해 주세요."
   },
   "Keys": {
     "title": "API 키 설정",
     "desc": "AI 공급자 키와 텔레그램 봇 토큰을 입력하세요. 선택 사항이지만 권장됩니다.",
-    "ai_label": "AI 공급자 키 (예: OpenAI)",
+    "provider_label": "AI 공급자",
+    "ai_label": "API 키",
     "ai_desc": "OpenClaw가 대화형 AI 에이전트를 구동하는 데 사용됩니다.",
+    "model_label": "AI 모델",
+    "model_desc": "대화에 사용할 구체적인 AI 모델을 선택하세요.",
     "tg_label": "텔레그램 봇 토큰",
     "tg_desc": "텔레그램 봇 인터페이스를 활성화합니다. @BotFather를 통해 생성하세요.",
-    "test_btn": "키 테스트 및 계속",
-    "testing": "키 유효성 검사 중..."
+    "test_btn": "키 테스트 및 모델 가져오기",
+    "testing": "키 유효성 검사 및 모델 정보를 불러오는 중..."
   },
   "Install": {
     "title": "OpenClaw 설치 중...",

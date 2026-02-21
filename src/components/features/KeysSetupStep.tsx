@@ -21,20 +21,40 @@ import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const keysSchema = z.object({
+    aiProvider: z.string().default('openai'),
     aiKey: z.string().optional(),
+    aiModel: z.string().optional(),
     telegramToken: z.string().optional(),
 });
 
+type KeysFormValues = z.infer<typeof keysSchema>;
+
 import { useTranslations } from 'next-intl';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 export default function KeysSetupStep() {
     const t = useTranslations('Keys');
     const tc = useTranslations('Common');
     const td = useTranslations('Dialog');
-    const { setStep, setKeys, aiKey: defaultAiKey, telegramToken: defaultTelegramToken } = useInstallStore();
+    const {
+        setStep,
+        setKeys,
+        setAIConfig,
+        aiKey: defaultAiKey,
+        aiProvider: defaultAiProvider,
+        aiModel: defaultAiModel,
+        telegramToken: defaultTelegramToken
+    } = useInstallStore();
     const { confirm } = useDialogStore();
     const [isTesting, setIsTesting] = useState(false);
-    const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+    const [testResult, setTestResult] = useState<{ success: boolean; message: string; models?: string[] } | null>(null);
+    const [availableModels, setAvailableModels] = useState<string[]>([]);
 
     const handleBack = () => {
         confirm({
@@ -46,17 +66,27 @@ export default function KeysSetupStep() {
         });
     };
 
-    const form = useForm<z.infer<typeof keysSchema>>({
+    const form = useForm<KeysFormValues>({
         resolver: zodResolver(keysSchema),
         defaultValues: {
+            aiProvider: defaultAiProvider || 'openai',
             aiKey: defaultAiKey,
+            aiModel: defaultAiModel,
             telegramToken: defaultTelegramToken,
         },
     });
 
-    async function onSubmit(values: z.infer<typeof keysSchema>) {
+    async function onSubmit(values: KeysFormValues) {
         if (!values.aiKey && !values.telegramToken) {
             setKeys('', '');
+            setStep(4);
+            return;
+        }
+
+        // If models are already fetched and a model is selected, proceed to next step
+        if (testResult?.success && values.aiModel) {
+            setKeys(values.aiKey || '', values.telegramToken || '');
+            setAIConfig(values.aiProvider, values.aiModel);
             setStep(4);
             return;
         }
@@ -75,10 +105,10 @@ export default function KeysSetupStep() {
             setTestResult(data);
 
             if (data.success) {
+                if (data.models) {
+                    setAvailableModels(data.models);
+                }
                 setKeys(values.aiKey || '', values.telegramToken || '');
-                setTimeout(() => {
-                    setStep(4);
-                }, 1500);
             }
         } catch (err) {
             setTestResult({ success: false, message: tc('error') });
@@ -97,17 +127,51 @@ export default function KeysSetupStep() {
             </CardHeader>
 
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-6">
                     <CardContent className="space-y-4">
 
-                        <FormField
+                        <FormField<KeysFormValues>
+                            control={form.control}
+                            name="aiProvider"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{t('provider_label')}</FormLabel>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                        disabled={testResult?.success}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select provider" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="openai">OpenAI</SelectItem>
+                                            <SelectItem value="anthropic">Anthropic</SelectItem>
+                                            <SelectItem value="openrouter">OpenRouter</SelectItem>
+                                            <SelectItem value="gemini">Google Gemini</SelectItem>
+                                            <SelectItem value="groq">Groq</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField<KeysFormValues>
                             control={form.control}
                             name="aiKey"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>{t('ai_label')}</FormLabel>
                                     <FormControl>
-                                        <Input type="password" placeholder="sk-..." {...field} />
+                                        <Input
+                                            type="password"
+                                            placeholder="sk-..."
+                                            {...field}
+                                            disabled={testResult?.success}
+                                        />
                                     </FormControl>
                                     <FormDescription>
                                         {t('ai_desc')}
@@ -117,7 +181,35 @@ export default function KeysSetupStep() {
                             )}
                         />
 
-                        <FormField
+                        {availableModels.length > 0 && (
+                            <FormField<KeysFormValues>
+                                control={form.control}
+                                name="aiModel"
+                                render={({ field }) => (
+                                    <FormItem className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <FormLabel>{t('model_label')}</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select AI model" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {availableModels.map(model => (
+                                                    <SelectItem key={model} value={model}>{model}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormDescription>
+                                            {t('model_desc')}
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        )}
+
+                        <FormField<KeysFormValues>
                             control={form.control}
                             name="telegramToken"
                             render={({ field }) => (

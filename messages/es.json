@@ -47,8 +47,19 @@
     "feature_auto_desc": "Programe tareas y cree flujos de trabajo de IA complejos sin programar."
   },
   "Environment": {
-    "title": "Seleccionar entorno",
-    "desc": "Elija dónde desea instalar OpenClaw."
+    "title": "Seleccionar Entorno",
+    "desc": "Por favor, seleccione el entorno donde desea instalar OpenClaw.",
+    "resources_title": "Requisitos Mínimos",
+    "resources_ram": "RAM: 2GB+ (4GB recomendado para automatización de navegador)",
+    "resources_cpu": "CPU: 2 Núcleos+",
+    "resources_storage": "Almacenamiento: 10GB+ de espacio libre",
+    "type_title": "Tipo de instalación",
+    "type_desc": "Elija su método de instalación preferido. Se recomienda Docker.",
+    "type_native": "Instalación nativa",
+    "type_native_desc": "Instale paquetes directamente en el servidor (requiere Node.js)",
+    "type_docker": "Instalación Docker (Recomendado)",
+    "type_docker_desc": "Ejecutar en un contenedor aislado. El método más estable y seguro.",
+    "sudo_warning": "Se requieren privilegios de sudo para la instalación de paquetes."
   },
   "SSH": {
     "title": "Configuración de conexión SSH",
@@ -63,19 +74,30 @@
     "user": "Nombre de usuario",
     "auth_type": "Tipo de autenticación",
     "password": "Contraseña",
+    "sudo_password": "Contraseña Sudo (Opcional)",
+    "sudo_password_placeholder": "Contraseña para privilegios sudo (si es necesaria)",
+    "sudo_password_guide": "Según la configuración del servidor, es posible que necesite una contraseña para sudo incluso con llaves. Si se detiene, ingrésela aquí.",
     "private_key": "Clave privada (Private Key)",
     "test_btn": "Probar conexión y continuar",
-    "testing": "Probando conexión..."
+    "testing": "Probando conexión...",
+    "sudo_warning": "La cuenta proporcionada debe tener privilegios sudo para la instalación automática.",
+    "host_guide": "Ingrese la dirección IP de su servidor (p. ej., 1.2.3.4) o el nombre de dominio (p. ej., miservidor.com).",
+    "user_guide": "Nombre de la cuenta para iniciar sesión. Valores comunes: 'root', 'ubuntu', 'ec2-user'.",
+    "sudo_guide": "Se requieren privilegios administrativos (sudo) para instalar el software. Asegúrese de que su contraseña sea correcta.",
+    "key_guide": "Copie y pegue el contenido de su archivo de clave privada (.pem, .key) utilizado en lugar de una contraseña."
   },
   "Keys": {
     "title": "Configuración de claves API",
     "desc": "Ingrese su clave de proveedor de IA y el token del bot de Telegram. Estos son opcionales pero recomendados.",
-    "ai_label": "Clave del proveedor de IA (ej. OpenAI)",
+    "provider_label": "Proveedor de IA",
+    "ai_label": "Clave API",
     "ai_desc": "Utilizada por OpenClaw para alimentar al agente de IA conversacional.",
+    "model_label": "Modelo de IA",
+    "model_desc": "Seleccione el modelo de IA específico para usar en las conversaciones.",
     "tg_label": "Token del bot de Telegram",
     "tg_desc": "Activa la interfaz del bot de Telegram. Cree uno a través de @BotFather.",
-    "test_btn": "Probar claves y continuar",
-    "testing": "Validando claves..."
+    "test_btn": "Probar claves y obtener modelos",
+    "testing": "Validando claves y cargando modelos..."
   },
   "Install": {
     "title": "Instalando OpenClaw...",

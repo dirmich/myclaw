@@ -47,8 +47,19 @@
     "feature_auto_desc": "コードを書かずにタスクをスケジュールし、複雑な AI ワークフローを作成。"
   },
   "Environment": {
-    "title": "環境を選択",
-    "desc": "OpenClaw をインストールする場所を選択してください。"
+    "title": "環境の選択",
+    "desc": "OpenClawをインストールする環境を選択してください。",
+    "resources_title": "最小要件",
+    "resources_ram": "メモリ: 2GB以上 (ブラウザ自動化には4GB推奨)",
+    "resources_cpu": "CPU: 2コア以上",
+    "resources_storage": "ストレージ: 10GB以上の空き容量",
+    "type_title": "インストール方式の選択",
+    "type_desc": "希望するインストール方式を選択してください。Dockerを推奨します。",
+    "type_native": "Native インストール",
+    "type_native_desc": "サーバーに直接パッケージをインストールします。(Node.jsが必要)",
+    "type_docker": "Docker インストール (推奨)",
+    "type_docker_desc": "コンテナ環境で実行します。最も安定的で隔離された方式です。",
+    "sudo_warning": "インストールプロセス中にパッケージのインストールのためにsudo権限が必要です。"
   },
   "SSH": {
     "title": "SSH 接続設定",
@@ -63,9 +74,17 @@
     "user": "ユーザー名",
     "auth_type": "認証方式",
     "password": "パスワード",
+    "sudo_password": "Sudoパスワード (任意)",
+    "sudo_password_placeholder": "Key認証時にsudo権限が必要な場合のパスワード",
+    "sudo_password_guide": "サーバーの設定によっては、Key認証を使用してもsudo実行時にパスワードが求められる場合があります。インストールが止まる場合は入力してください。",
     "private_key": "秘密鍵 (Private Key)",
     "test_btn": "接続テストをして続ける",
-    "testing": "接続テスト中..."
+    "testing": "接続テスト中...",
+    "sudo_warning": "入力されたアカウントは、自動インストールのためにsudo権限を持っている必要があります。",
+    "host_guide": "サーバーのIPアドレス（例：1.2.3.4）またはドメイン名（例：myserver.com）を入力してください。",
+    "user_guide": "ログインするアカウント名を入力してください。通常、'root'、'ubuntu'、'ec2-user'などが使用されます。",
+    "sudo_guide": "ソフトウェアをインストールするには管理者権限（sudo）が必要です。パスワードが正しいか確認してください。",
+    "key_guide": "パスワードの代わりに使用する秘密鍵ファイル（.pem, .key）の内容をコピーして貼り付けてください。"
   },
   "Keys": {
     "title": "API キー設定",

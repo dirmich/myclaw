@@ -24,9 +24,24 @@ export async function POST(request: Request) {
         }
 
         await ssh.connect(sshConfig);
+
+        // Check for sudo privileges
+        const privilegeCheck = await ssh.execCommand('whoami && sudo -n true 2>/dev/null && echo "SUDO_OK" || echo "SUDO_NO"');
+        const output = privilegeCheck.stdout.trim().split('\n');
+        const whoami = output[0];
+        const sudoStatus = output[output.length - 1]; // Use last line in case of motd noise
+
+        const isRoot = whoami === 'root';
+        const canSudoWithoutPassword = sudoStatus === 'SUDO_OK';
+
         await ssh.dispose();
 
-        return NextResponse.json({ success: true, message: 'SSH Connection successful!' });
+        return NextResponse.json({
+            success: true,
+            message: 'SSH Connection successful!',
+            isRoot,
+            canSudoWithoutPassword
+        });
     } catch (error: any) {
         console.error('SSH Connection Error:', error);
         return NextResponse.json({
