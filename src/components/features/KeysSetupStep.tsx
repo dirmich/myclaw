@@ -21,7 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const keysSchema = z.object({
-    aiProvider: z.string().default('openai'),
+    aiProvider: z.string().min(1),
     aiKey: z.string().optional(),
     aiModel: z.string().optional(),
     telegramToken: z.string().optional(),
@@ -51,13 +51,18 @@ export default function KeysSetupStep() {
         aiModel: defaultAiModel,
         telegramToken: defaultTelegramToken
     } = useInstallStore();
-    const { confirm } = useDialogStore();
-    const [isTesting, setIsTesting] = useState(false);
-    const [testResult, setTestResult] = useState<{ success: boolean; message: string; models?: string[] } | null>(null);
+    const { confirm: showConfirm } = useDialogStore();
+    const [isAiTesting, setIsAiTesting] = useState(false);
+    const [isTgTesting, setIsTgTesting] = useState(false);
+    const [aiTestResult, setAiTestResult] = useState<{ success: boolean; message: string; models?: string[] } | null>(null);
+    const [tgTestResult, setTgTestResult] = useState<{ success: boolean; message: string } | null>(null);
     const [availableModels, setAvailableModels] = useState<string[]>([]);
 
+    const aiVerified = aiTestResult?.success || false;
+    const tgVerified = tgTestResult?.success || false;
+
     const handleBack = () => {
-        confirm({
+        showConfirm({
             title: td('back_title'),
             description: td('back_desc'),
             confirmText: td('move'),
@@ -76,44 +81,65 @@ export default function KeysSetupStep() {
         },
     });
 
-    async function onSubmit(values: KeysFormValues) {
-        if (!values.aiKey && !values.telegramToken) {
-            setKeys('', '');
-            setStep(4);
-            return;
-        }
+    async function verifyAI() {
+        const values = form.getValues();
+        if (!values.aiKey) return;
 
-        // If models are already fetched and a model is selected, proceed to next step
-        if (testResult?.success && values.aiModel) {
-            setKeys(values.aiKey || '', values.telegramToken || '');
-            setAIConfig(values.aiProvider, values.aiModel);
-            setStep(4);
-            return;
-        }
-
-        setIsTesting(true);
-        setTestResult(null);
+        setIsAiTesting(true);
+        setAiTestResult(null);
 
         try {
             const res = await fetch('/api/test-key', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(values),
+                body: JSON.stringify({
+                    type: 'ai',
+                    aiProvider: values.aiProvider,
+                    aiKey: values.aiKey
+                }),
             });
             const data = await res.json();
-
-            setTestResult(data);
-
-            if (data.success) {
-                if (data.models) {
-                    setAvailableModels(data.models);
-                }
-                setKeys(values.aiKey || '', values.telegramToken || '');
+            setAiTestResult(data);
+            if (data.success && data.models) {
+                setAvailableModels(data.models);
             }
         } catch (err) {
-            setTestResult({ success: false, message: tc('error') });
+            setAiTestResult({ success: false, message: tc('error') });
         } finally {
-            setIsTesting(false);
+            setIsAiTesting(false);
+        }
+    }
+
+    async function verifyTelegram() {
+        const values = form.getValues();
+        if (!values.telegramToken) return;
+
+        setIsTgTesting(true);
+        setTgTestResult(null);
+
+        try {
+            const res = await fetch('/api/test-key', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'telegram',
+                    telegramToken: values.telegramToken
+                }),
+            });
+            const data = await res.json();
+            setTgTestResult(data);
+        } catch (err) {
+            setTgTestResult({ success: false, message: tc('error') });
+        } finally {
+            setIsTgTesting(false);
+        }
+    }
+
+    async function onSubmit(values: KeysFormValues) {
+        if (aiVerified && tgVerified && values.aiModel) {
+            setKeys(values.aiKey || '', values.telegramToken || '');
+            setAIConfig(values.aiProvider, values.aiModel);
+            setStep(4);
         }
     }
 
@@ -135,11 +161,14 @@ export default function KeysSetupStep() {
                             name="aiProvider"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>{t('provider_label')}</FormLabel>
                                     <Select
-                                        onValueChange={field.onChange}
+                                        onValueChange={(val) => {
+                                            field.onChange(val);
+                                            setAiTestResult(null);
+                                            setAvailableModels([]);
+                                        }}
                                         defaultValue={field.value}
-                                        disabled={testResult?.success}
+                                        disabled={aiVerified}
                                     >
                                         <FormControl>
                                             <SelectTrigger>
@@ -164,19 +193,45 @@ export default function KeysSetupStep() {
                             name="aiKey"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>{t('ai_label')}</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="password"
-                                            placeholder="sk-..."
-                                            {...field}
-                                            disabled={testResult?.success}
-                                        />
-                                    </FormControl>
+                                    <div className="flex justify-between items-center">
+                                        <FormLabel>{t('ai_label')}</FormLabel>
+                                        {aiVerified && <span className="text-xs text-emerald-600 font-medium flex items-center">
+                                            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                                            {t('verified')}
+                                        </span>}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <FormControl>
+                                            <Input
+                                                type="password"
+                                                placeholder="sk-..."
+                                                {...field}
+                                                onChange={(e) => {
+                                                    field.onChange(e);
+                                                    setAiTestResult(null);
+                                                    setAvailableModels([]);
+                                                }}
+                                                disabled={aiVerified}
+                                            />
+                                        </FormControl>
+                                        <Button
+                                            type="button"
+                                            variant={aiVerified ? "ghost" : "outline"}
+                                            size="sm"
+                                            onClick={verifyAI}
+                                            disabled={isAiTesting || aiVerified || !field.value}
+                                            className="shrink-0"
+                                        >
+                                            {isAiTesting ? t('testing') : aiVerified ? tc('success') : t('test_ai_btn')}
+                                        </Button>
+                                    </div>
                                     <FormDescription>
                                         {t('ai_desc')}
                                     </FormDescription>
                                     <FormMessage />
+                                    {aiTestResult && !aiTestResult.success && (
+                                        <p className="text-[0.8rem] font-medium text-destructive">{aiTestResult.message}</p>
+                                    )}
                                 </FormItem>
                             )}
                         />
@@ -209,51 +264,68 @@ export default function KeysSetupStep() {
                             />
                         )}
 
+                        <div className="py-2">
+                            <hr className="border-zinc-200 dark:border-zinc-800" />
+                        </div>
+
                         <FormField<KeysFormValues>
                             control={form.control}
                             name="telegramToken"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>{t('tg_label')}</FormLabel>
-                                    <FormControl>
-                                        <Input type="password" placeholder="..." {...field} />
-                                    </FormControl>
+                                    <div className="flex justify-between items-center">
+                                        <FormLabel>{t('tg_label')}</FormLabel>
+                                        {tgVerified && <span className="text-xs text-emerald-600 font-medium flex items-center">
+                                            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                                            {t('verified')}
+                                        </span>}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <FormControl>
+                                            <Input
+                                                type="password"
+                                                placeholder="..."
+                                                {...field}
+                                                onChange={(e) => {
+                                                    field.onChange(e);
+                                                    setTgTestResult(null);
+                                                }}
+                                                disabled={tgVerified}
+                                            />
+                                        </FormControl>
+                                        <Button
+                                            type="button"
+                                            variant={tgVerified ? "ghost" : "outline"}
+                                            size="sm"
+                                            onClick={verifyTelegram}
+                                            disabled={isTgTesting || tgVerified || !field.value}
+                                            className="shrink-0"
+                                        >
+                                            {isTgTesting ? t('testing') : tgVerified ? tc('success') : t('test_tg_btn')}
+                                        </Button>
+                                    </div>
                                     <FormDescription>
                                         {t('tg_desc')}
                                     </FormDescription>
                                     <FormMessage />
+                                    {tgTestResult && !tgTestResult.success && (
+                                        <p className="text-[0.8rem] font-medium text-destructive">{tgTestResult.message}</p>
+                                    )}
                                 </FormItem>
                             )}
                         />
 
-                        {testResult && (
-                            <Alert variant={testResult.success ? 'default' : 'destructive'} className={testResult.success ? 'border-emerald-500 text-emerald-700 bg-emerald-50 dark:bg-emerald-950/30' : ''}>
-                                <AlertTitle>{testResult.success ? tc('success') : tc('failed')}</AlertTitle>
-                                <AlertDescription>
-                                    {testResult.message}
-                                </AlertDescription>
-                            </Alert>
-                        )}
-
                     </CardContent>
                     <CardFooter className="flex justify-between bg-zinc-50 dark:bg-zinc-900/50 px-6 py-4 border-t border-zinc-200 dark:border-zinc-800">
-                        <Button type="button" variant="outline" onClick={handleBack} disabled={isTesting}>
+                        <Button type="button" variant="outline" onClick={handleBack} disabled={isAiTesting || isTgTesting}>
                             {tc('back')}
                         </Button>
-                        <Button type="submit" disabled={isTesting} className={testResult?.success ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : ''}>
-                            {isTesting ? (
-                                <span className="flex items-center">
-                                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    {t('testing')}
-                                </span>
-                            ) : testResult?.success ? (
-                                tc('proceeding')
-                            ) : (
-                                t('test_btn')
-                            )}
+                        <Button
+                            type="submit"
+                            disabled={!aiVerified || !tgVerified || !form.watch('aiModel')}
+                            className={aiVerified && tgVerified && form.watch('aiModel') ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : ''}
+                        >
+                            {(!aiVerified || !tgVerified || !form.watch('aiModel')) ? t('verify_required') : tc('proceeding')}
                         </Button>
                     </CardFooter>
                 </form>

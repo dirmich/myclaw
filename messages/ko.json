@@ -90,7 +90,11 @@
     "tg_label": "텔레그램 봇 토큰",
     "tg_desc": "텔레그램 봇 인터페이스를 활성화합니다. @BotFather를 통해 생성하세요.",
     "test_btn": "키 테스트 및 모델 가져오기",
-    "testing": "키 유효성 검사 및 모델 정보를 불러오는 중..."
+    "test_ai_btn": "AI 키 확인",
+    "test_tg_btn": "텔레그램 토큰 확인",
+    "testing": "키 유효성 검사 및 모델 정보를 불러오는 중...",
+    "verified": "확인 완료",
+    "verify_required": "먼저 확인이 필요합니다"
   },
   "Install": {
     "title": "OpenClaw 설치 중...",

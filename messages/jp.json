@@ -94,7 +94,11 @@
     "tg_label": "Telegram ボットトークン",
     "tg_desc": "Telegram ボットインターフェースを有効にします。@BotFather 経由で作成してください。",
     "test_btn": "キーをテストして続ける",
-    "testing": "キーの有効性を確認中..."
+    "test_ai_btn": "AIキーを確認",
+    "test_tg_btn": "Telegramトークンを確認",
+    "testing": "キーの有効性を確認中...",
+    "verified": "確認済み",
+    "verify_required": "確認が必要です"
   },
   "Install": {
     "title": "OpenClaw インストール中...",

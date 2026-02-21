@@ -94,7 +94,11 @@
     "tg_label": "电报机器人令牌",
     "tg_desc": "启用电报机器人界面。请通过 @BotFather 创建。",
     "test_btn": "测试密钥并继续",
-    "testing": "正在验证密钥..."
+    "test_ai_btn": "验证 AI 密钥",
+    "test_tg_btn": "验证 Telegram 令牌",
+    "testing": "正在验证密钥...",
+    "verified": "已验证",
+    "verify_required": "需要先验证"
   },
   "Install": {
     "title": "正在安装 OpenClaw...",

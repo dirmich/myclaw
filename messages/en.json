@@ -90,7 +90,11 @@
     "tg_label": "Telegram Bot Token",
     "tg_desc": "Enables the Telegram Bot interface. Create one via @BotFather.",
     "test_btn": "Test Keys & Fetch Models",
-    "testing": "Validating Keys & Loading Models..."
+    "test_ai_btn": "Verify AI Key",
+    "test_tg_btn": "Verify Telegram Token",
+    "testing": "Validating keys and fetching model info...",
+    "verified": "Verified",
+    "verify_required": "Verification required"
   },
   "Install": {
     "title": "Installing OpenClaw...",
