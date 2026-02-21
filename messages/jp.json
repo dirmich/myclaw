@@ -98,7 +98,8 @@
     "test_tg_btn": "Telegramトークンを確認",
     "testing": "キーの有効性を確認中...",
     "verified": "確認済み",
-    "verify_required": "確認が必要です"
+    "verify_required": "確認が必要です",
+    "proceed_install": "インストールを続行"
   },
   "Install": {
     "title": "OpenClaw インストール中...",

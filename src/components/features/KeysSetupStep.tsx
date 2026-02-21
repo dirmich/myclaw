@@ -325,7 +325,7 @@ export default function KeysSetupStep() {
                             disabled={!aiVerified || !tgVerified || !form.watch('aiModel')}
                             className={aiVerified && tgVerified && form.watch('aiModel') ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : ''}
                         >
-                            {(!aiVerified || !tgVerified || !form.watch('aiModel')) ? t('verify_required') : tc('proceeding')}
+                            {(!aiVerified || !tgVerified || !form.watch('aiModel')) ? t('verify_required') : t('proceed_install')}
                         </Button>
                     </CardFooter>
                 </form>

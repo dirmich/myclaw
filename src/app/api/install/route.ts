@@ -119,9 +119,9 @@ fi
                     // Create directories and ensure they are writable by the container's user (usually UID 1000)
                     const prepareDirsCmd = `
 mkdir -p ~/.openclaw/workspace
-# Pre-configure gateway.bind to 'lan' in openclaw.json if it doesn't exist
+# Pre-configure gateway.bind to 'lan', mode to 'local', and allow insecure auth in openclaw.json if it doesn't exist
 if [ ! -f ~/.openclaw/openclaw.json ]; then
-  echo '{"gateway": {"bind": "lan"}}' > ~/.openclaw/openclaw.json
+  echo '{"gateway": {"bind": "lan", "mode": "local", "controlUi": {"allowInsecureAuth": true}}}' > ~/.openclaw/openclaw.json
 fi
 sudo chown -R 1000:1000 ~/.openclaw
 sudo chmod -R 770 ~/.openclaw
@@ -136,13 +136,12 @@ sudo chmod -R 770 ~/.openclaw
                     sendLog(50, 'Creating docker-compose.yml...');
                     const envVars = [];
                     if (aiKey) {
-                        // Try to guess provider
-                        let provider = 'openai';
-                        if (aiKey.startsWith('sk-ant-')) provider = 'anthropic';
-                        else if (aiKey.startsWith('sk-or-')) provider = 'openrouter';
-
-                        envVars.push(`      - OPENAI_API_KEY=${aiKey}`);
-                        envVars.push(`      - ANTHROPIC_API_KEY=${aiKey}`);
+                        const provider = aiProvider || 'openai';
+                        if (provider === 'openai') envVars.push(`      - OPENAI_API_KEY=${aiKey}`);
+                        if (provider === 'anthropic') envVars.push(`      - ANTHROPIC_API_KEY=${aiKey}`);
+                        if (provider === 'gemini') envVars.push(`      - GEMINI_API_KEY=${aiKey}`);
+                        if (provider === 'groq') envVars.push(`      - GROQ_API_KEY=${aiKey}`);
+                        if (provider === 'openrouter') envVars.push(`      - OPENROUTER_API_KEY=${aiKey}`);
                     }
                     if (telegramToken) {
                         envVars.push(`      - TELEGRAM_TOKEN=${telegramToken}`);
@@ -154,7 +153,7 @@ services:
     image: ghcr.io/openclaw/openclaw:main
     container_name: openclaw-gateway
     restart: always
-    command: gateway run --bind lan
+    command: node dist/index.js gateway --bind lan --allow-unconfigured
     ports:
       - "18789:18789"
     volumes:
@@ -190,40 +189,47 @@ ${envVars.join('\n')}
 
                     // 5. Post-installation configuration (Set API Keys inside container)
                     if (aiKey || telegramToken) {
-                        sendLog(95, 'Configuring API keys inside the container...');
+                        sendLog(95, 'Configuring API keys and primary model inside the container...');
                         // Wait a bit for the container to initialize
                         await new Promise(resolve => setTimeout(resolve, 5000));
 
                         if (aiKey) {
                             const provider = aiProvider || 'openai';
                             const model = aiModel || 'gpt-4o';
+                            const fullModelId = model.includes('/') ? model : `${provider}/${model}`;
+
+                            // 1. Add provider and model
                             await ssh.execCommand(`docker exec openclaw-gateway openclaw providers add --provider ${provider} --token ${aiKey} --model ${model}`).catch(() => {
-                                // Fallback if 'openclaw' command is not in path
-                                return ssh.execCommand(`docker exec openclaw-gateway node dist/entry.js providers add --provider ${provider} --token ${aiKey} --model ${model}`);
+                                return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js providers add --provider ${provider} --token ${aiKey} --model ${model}`);
+                            });
+
+                            // 2. Set as primary model for default agent
+                            await ssh.execCommand(`docker exec openclaw-gateway openclaw config set agents.defaults.model.primary ${fullModelId}`).catch(() => {
+                                return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js config set agents.defaults.model.primary ${fullModelId}`);
                             });
                         }
 
                         if (telegramToken) {
                             await ssh.execCommand(`docker exec openclaw-gateway openclaw providers add --provider telegram --token ${telegramToken}`).catch(() => {
-                                // Fallback
-                                return ssh.execCommand(`docker exec openclaw-gateway node dist/entry.js providers add --provider telegram --token ${telegramToken}`);
+                                return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js providers add --provider telegram --token ${telegramToken}`);
                             });
                         }
+
+                        // Fix: Set gateway.bind to 'lan' to allow external access (0.0.0.0)
+                        sendLog(96, 'Configuring gateway to allow external access (binding to 0.0.0.0)...');
+                        await ssh.execCommand(`docker exec openclaw-gateway openclaw config set gateway.bind lan`).catch(() => {
+                            return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js config set gateway.bind lan`);
+                        });
+
+                        // Restart container to apply all changes (bind address and keys)
+                        sendLog(97, 'Restarting OpenClaw to apply configuration changes...');
+                        await ssh.execCommand('docker restart openclaw-gateway');
+
+                        sendLog(98, 'Configuration changes applied and container restarted.');
+                        sendLog(100, `[SUCCESS] Docker installation completed. Access the UI at http://${sshConfig.host}:18789`);
+                    } else {
+                        sendLog(100, `[SUCCESS] Docker base installation completed. Access the UI at http://${sshConfig.host}:18789`);
                     }
-
-                    // Fix: Set gateway.bind to 'lan' to allow external access (0.0.0.0)
-                    sendLog(96, 'Configuring gateway to allow external access (binding to 0.0.0.0)...');
-                    await ssh.execCommand(`docker exec openclaw-gateway openclaw config set gateway.bind lan`).catch(() => {
-                        return ssh.execCommand(`docker exec openclaw-gateway node dist/entry.js config set gateway.bind lan`);
-                    });
-
-                    // Restart container to apply all changes (bind address and keys)
-                    sendLog(97, 'Restarting OpenClaw to apply configuration changes...');
-                    await ssh.execCommand('docker restart openclaw-gateway');
-
-                    sendLog(98, 'Configuration changes applied and container restarted.');
-                    sendLog(100, `[SUCCESS] Docker installation completed. Access the UI at http://${sshConfig.host}:18789`);
-
                 } else {
                     throw new Error('Native installation is currently disabled. Please use Docker.');
                 }

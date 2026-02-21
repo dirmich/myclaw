@@ -94,7 +94,8 @@
     "test_tg_btn": "텔레그램 토큰 확인",
     "testing": "키 유효성 검사 및 모델 정보를 불러오는 중...",
     "verified": "확인 완료",
-    "verify_required": "먼저 확인이 필요합니다"
+    "verify_required": "먼저 확인이 필요합니다",
+    "proceed_install": "설치 진행"
   },
   "Install": {
     "title": "OpenClaw 설치 중...",

@@ -101,7 +101,8 @@
     "test_tg_btn": "Verificar token de Telegram",
     "testing": "Validando claves y cargando modelos...",
     "verified": "Verificado",
-    "verify_required": "Verificación requerida"
+    "verify_required": "Verificación requerida",
+    "proceed_install": "Proceder con la instalación"
   },
   "Install": {
     "title": "Instalando OpenClaw...",

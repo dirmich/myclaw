@@ -98,7 +98,8 @@
     "test_tg_btn": "验证 Telegram 令牌",
     "testing": "正在验证密钥...",
     "verified": "已验证",
-    "verify_required": "需要先验证"
+    "verify_required": "需要验证",
+    "proceed_install": "继续安装"
   },
   "Install": {
     "title": "正在安装 OpenClaw...",

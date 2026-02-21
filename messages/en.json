@@ -94,7 +94,8 @@
     "test_tg_btn": "Verify Telegram Token",
     "testing": "Validating keys and fetching model info...",
     "verified": "Verified",
-    "verify_required": "Verification required"
+    "verify_required": "Verification required",
+    "proceed_install": "Proceed to Installation"
   },
   "Install": {
     "title": "Installing OpenClaw...",
