@@ -1,1 +1,4 @@
-HTTP 접속 보안 강제 비활성화 설정 추가 (gateway.controlUi.allowInsecureAuth true)
+게이트웨이 보안 설정 및 토큰 인증 자동화 (HTTP/LAN 환경 지원 보강)
+- 랜덤 게이트웨이 토큰 생성 및 접속 URL 포함
+- allowInsecureAuth 및 dangerouslyDisableDeviceAuth 설정 강제 적용
+- 모든 설치 유형에 대해 일관된 보안 설정 적용
