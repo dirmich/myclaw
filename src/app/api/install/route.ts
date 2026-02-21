@@ -216,9 +216,14 @@ ${envVars.join('\n')}
                         }
 
                         // Fix: Set gateway.bind to 'lan' to allow external access (0.0.0.0)
-                        sendLog(96, 'Configuring gateway to allow external access (binding to 0.0.0.0)...');
+                        sendLog(96, 'Configuring gateway to allow external access and insecure auth...');
                         await ssh.execCommand(`docker exec openclaw-gateway openclaw config set gateway.bind lan`).catch(() => {
                             return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js config set gateway.bind lan`);
+                        });
+
+                        // Force allowInsecureAuth to true for HTTP/LAN access
+                        await ssh.execCommand(`docker exec openclaw-gateway openclaw config set gateway.controlUi.allowInsecureAuth true`).catch(() => {
+                            return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js config set gateway.controlUi.allowInsecureAuth true`);
                         });
 
                         // Restart container to apply all changes (bind address and keys)

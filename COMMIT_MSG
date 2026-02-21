@@ -1,1 +1,1 @@
-버튼 라벨, HTTP 접속 보안(allowInsecureAuth), 및 기본 AI 모델 설정 이슈 해결
+HTTP 접속 보안 강제 비활성화 설정 추가 (gateway.controlUi.allowInsecureAuth true)
