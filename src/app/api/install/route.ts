@@ -189,6 +189,10 @@ ${envVars.join('\n')}
 
                     // 5. Post-installation configuration
                     sendLog(95, 'Configuring gateway security and access settings...');
+                    // Debug: Check existing config
+                    const initialConfig = await ssh.execCommand('cat ~/.openclaw/openclaw.json');
+                    sendLog(95, `Initial config: ${initialConfig.stdout}`);
+
                     // Wait a bit for the container to initialize
                     await new Promise(resolve => setTimeout(resolve, 5000));
 
@@ -206,14 +210,16 @@ ${envVars.join('\n')}
                     });
 
                     // 3. Force allowInsecureAuth to true for HTTP/LAN access
-                    await ssh.execCommand(`docker exec openclaw-gateway openclaw config set gateway.controlUi.allowInsecureAuth true`).catch(() => {
+                    const insecRes = await ssh.execCommand(`docker exec openclaw-gateway openclaw config set gateway.controlUi.allowInsecureAuth true`).catch(() => {
                         return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js config set gateway.controlUi.allowInsecureAuth true`);
                     });
+                    sendLog(96, `InsecureAuth config result: ${insecRes.stdout || insecRes.stderr}`);
 
                     // 4. Dangerously disable device auth for easier HTTP access
-                    await ssh.execCommand(`docker exec openclaw-gateway openclaw config set gateway.controlUi.dangerouslyDisableDeviceAuth true`).catch(() => {
+                    const devAuthRes = await ssh.execCommand(`docker exec openclaw-gateway openclaw config set gateway.controlUi.dangerouslyDisableDeviceAuth true`).catch(() => {
                         return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js config set gateway.controlUi.dangerouslyDisableDeviceAuth true`);
                     });
+                    sendLog(96, `DeviceAuth config result: ${devAuthRes.stdout || devAuthRes.stderr}`);
 
                     // 5b. AI Keys and Model Configuration
                     if (aiKey) {
@@ -221,9 +227,10 @@ ${envVars.join('\n')}
                         const model = aiModel || 'gpt-4o';
                         const fullModelId = model.includes('/') ? model : `${provider}/${model}`;
 
-                        // Add provider and model
-                        await ssh.execCommand(`docker exec openclaw-gateway openclaw providers add --provider ${provider} --token ${aiKey} --model ${model}`).catch(() => {
-                            return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js providers add --provider ${provider} --token ${aiKey} --model ${model}`);
+                        // Add provider and model via config set
+                        const providerKey = provider === 'gemini' ? 'google' : provider;
+                        await ssh.execCommand(`docker exec openclaw-gateway openclaw config set models.providers.${providerKey}.apiKey ${aiKey}`).catch(() => {
+                            return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js config set models.providers.${providerKey}.apiKey ${aiKey}`);
                         });
 
                         // Set as primary model for default agent
@@ -233,14 +240,22 @@ ${envVars.join('\n')}
                     }
 
                     if (telegramToken) {
-                        await ssh.execCommand(`docker exec openclaw-gateway openclaw providers add --provider telegram --token ${telegramToken}`).catch(() => {
-                            return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js providers add --provider telegram --token ${telegramToken}`);
+                        await ssh.execCommand(`docker exec openclaw-gateway openclaw config set telegram.botToken ${telegramToken}`).catch(() => {
+                            return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js config set telegram.botToken ${telegramToken}`);
                         });
                     }
 
                     // 6. Restart container to apply all changes
                     sendLog(97, 'Restarting OpenClaw to apply configuration changes...');
                     await ssh.execCommand('docker restart openclaw-gateway');
+
+                    // Check gateway logs for errors
+                    const gatewayLogs = await ssh.execCommand('docker logs --tail 20 openclaw-gateway');
+                    sendLog(97, `Gateway logs: ${gatewayLogs.stdout}`);
+
+                    // Debug: Check final config
+                    const finalConfig = await ssh.execCommand('cat ~/.openclaw/openclaw.json');
+                    sendLog(98, `Final config: ${finalConfig.stdout}`);
 
                     sendLog(100, `[SUCCESS] Docker installation completed. Access the UI at http://${sshConfig.host}:18789/?token=${gatewayToken}`);
                 } else {

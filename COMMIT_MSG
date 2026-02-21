@@ -1,4 +1,7 @@
-게이트웨이 보안 설정 및 토큰 인증 자동화 (HTTP/LAN 환경 지원 보강)
-- 랜덤 게이트웨이 토큰 생성 및 접속 URL 포함
-- allowInsecureAuth 및 dangerouslyDisableDeviceAuth 설정 강제 적용
-- 모든 설치 유형에 대해 일관된 보안 설정 적용
+Docker Gateway 설정 및 AI 공급자/모델/텔레그램 설정 수정
+
+- 잘못된 `providers add` 명령을 `config set` 명령으로 수정
+- AI 공급자(OpenAI, Anthropic, Gemini 등) API 키 자동 설정
+- 기본 에이전트의 주 모델(primary model) 주입 자동화
+- 텔레그램 봇 토큰 설정 자동화
+- 게이트웨이 보안 및 LAN 접속 설정 최적화
