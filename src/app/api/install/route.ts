@@ -217,11 +217,11 @@ fi
                     }
 
                     const configJson = JSON.stringify(configObj, null, 2);
+                    const configBase64 = Buffer.from(configJson).toString('base64');
+
                     const prepareDirsCmd = `
 mkdir -p "${openclawDir}/workspace"
-cat <<'EOF' > "${openclawDir}/openclaw.json"
-${configJson}
-EOF
+echo "${configBase64}" | base64 -d > "${openclawDir}/openclaw.json"
 sudo chown -R 1000:1000 "${openclawDir}"
 sudo chmod -R 770 "${openclawDir}"
 `.trim();
@@ -251,8 +251,8 @@ services:
       - NODE_ENV=production
       - OPENCLAW_STATE_DIR=/home/node/.openclaw
 `.trim();
-                    // Use a safer way to create the file
-                    await ssh.execCommand(`cat <<'EOF' > ~/docker-compose.yml\n${dockerComposeContent}\nEOF`);
+                    const composeBase64 = Buffer.from(dockerComposeContent).toString('base64');
+                    await ssh.execCommand(`echo "${composeBase64}" | base64 -d > ~/docker-compose.yml`);
 
                     // 4. Run Docker Compose
                     sendLog(60, 'Starting OpenClaw via Docker Compose...');

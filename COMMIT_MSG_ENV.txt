@@ -1,1 +1,0 @@
-fix: EnvironmentStep 누락된 번역 키 (type_docker) 추가
