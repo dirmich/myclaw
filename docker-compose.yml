@@ -3,8 +3,8 @@ services:
     image: dirmich/myclaw:latest
     container_name: myclaw
     restart: always
-    ports:
-      - "3000:3000"
+    # ports:
+    #   - "3000:3000"
     environment:
       - NODE_ENV=production
     # Optional: mount directories if you need persistent config or files
