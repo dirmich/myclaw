@@ -176,7 +176,24 @@ fi
                     if (telegramToken) {
                         configObj.channels = {
                             telegram: {
-                                botToken: telegramToken
+                                enabled: true,
+                                botToken: telegramToken,
+                                dmPolicy: "open",
+                                allowFrom: ["*"],
+                                // Zod 필수 필드 (빈 객체로 초기화하여 스키마 검증 통과 및 UI 렌더링 지원)
+                                markdown: {},
+                                commands: {
+                                    native: "auto"
+                                },
+                                retry: {},
+                                heartbeat: "all",
+                                capabilities: {
+                                    inlineButtons: "all"
+                                },
+                                actions: {
+                                    sendMessage: true,
+                                    reactions: true
+                                }
                             }
                         };
                     }

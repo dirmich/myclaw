@@ -1,6 +1,5 @@
-docker: AI API 키 설정 오류 및 볼륨 매핑 문제 해결
+텔레그램 채널 설정 스키마 수정 및 통신 복구
 
-1. AI API 키 설정을 schema 유효성 검사 오류(baseUrl, models 누락) 방지를 위해 models.providers 대신 env.vars를 사용하도록 변경
-2. SSH 사용자의 홈 디렉토리를 런타임에 감지하여 docker-compose.yml 내 볼륨 경로를 절대 경로로 수정 (sudo 실행 시 $HOME 불일치 문제 해결)
-3. Telegram 설정 schema를 channels.telegram으로 올바르게 반영
-4. OpenClaw 컨테이너 내 OPENCLAW_STATE_DIR 환경변수 추가로 경로 일관성 확보
+- openclaw.json 생성 시 텔레그램 필수 필드(markdown, commands, retry 등) 포함
+- dmPolicy를 'open'으로 설정하여 초기 접근성 강화
+- 대시보드 UI에서의 스키마 분석 오류 대응을 위한 설정 보강
