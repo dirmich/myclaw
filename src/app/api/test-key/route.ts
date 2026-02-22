@@ -44,14 +44,19 @@ export async function POST(request: Request) {
                 return NextResponse.json({ success: false, message: 'Please provide a Telegram Token.' }, { status: 400 });
             }
 
-            if (telegramToken.startsWith('fail')) {
-                return NextResponse.json({ success: false, message: 'Invalid Telegram Bot Token.' }, { status: 403 });
+            try {
+                const tgRes = await fetch(`https://api.telegram.org/bot${telegramToken}/getMe`);
+                if (!tgRes.ok) {
+                    return NextResponse.json({ success: false, message: 'Invalid Telegram Bot Token.' }, { status: 403 });
+                }
+                const tgData = await tgRes.json();
+                return NextResponse.json({
+                    success: true,
+                    message: `Telegram Token validated successfully! (Bot: @${tgData.result.username})`
+                });
+            } catch (error: any) {
+                return NextResponse.json({ success: false, message: `Telegram validation failed: ${error.message}` }, { status: 500 });
             }
-
-            return NextResponse.json({
-                success: true,
-                message: 'Telegram Token validated successfully!'
-            });
         }
 
         if (type === 'discord') {
@@ -59,14 +64,24 @@ export async function POST(request: Request) {
                 return NextResponse.json({ success: false, message: 'Please provide a Discord Token.' }, { status: 400 });
             }
 
-            if (body.discordToken.startsWith('fail')) {
-                return NextResponse.json({ success: false, message: 'Invalid Discord Bot Token.' }, { status: 403 });
-            }
+            try {
+                const dcRes = await fetch('https://discord.com/api/v10/oauth2/applications/@me', {
+                    headers: {
+                        Authorization: `Bot ${body.discordToken}`
+                    }
+                });
 
-            return NextResponse.json({
-                success: true,
-                message: 'Discord Token validated successfully!'
-            });
+                if (!dcRes.ok) {
+                    return NextResponse.json({ success: false, message: 'Invalid Discord Bot Token or lack of permissions.' }, { status: 403 });
+                }
+                const dcData = await dcRes.json();
+                return NextResponse.json({
+                    success: true,
+                    message: `Discord Token validated successfully! (App ID: ${dcData.id})`
+                });
+            } catch (error: any) {
+                return NextResponse.json({ success: false, message: `Discord validation failed: ${error.message}` }, { status: 500 });
+            }
         }
     } catch (error) {
         return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
