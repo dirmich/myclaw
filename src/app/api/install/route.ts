@@ -21,11 +21,11 @@ export async function POST(request: Request) {
     const stream = new ReadableStream({
         async start(controller) {
             const ssh = new NodeSSH();
-            const sendLog = (progress: number, log: string) => {
+            const sendLog = (progress: number, log: string, data?: any) => {
                 const sanitizedLog = stripAnsi(log);
                 if (!sanitizedLog.trim() && log.trim()) return; // Skip if it's purely escape codes
-                const data = JSON.stringify({ progress, log: sanitizedLog }) + '\n';
-                controller.enqueue(encoder.encode(data));
+                const payload = JSON.stringify({ progress, log: sanitizedLog, ...data }) + '\n';
+                controller.enqueue(encoder.encode(payload));
             };
 
             try {
@@ -58,8 +58,8 @@ export async function POST(request: Request) {
 
                 if (installType === 'docker') {
                     // --- DOCKER INSTALLATION PATH ---
-                    sendLog(15, 'Starting Docker-based installation...');
                     const gatewayToken = crypto.randomBytes(16).toString('hex');
+                    sendLog(15, 'Starting Docker-based installation...', { gatewayToken });
 
                     // 1. Check/Install Docker
                     sendLog(20, 'Checking if Docker is installed...');

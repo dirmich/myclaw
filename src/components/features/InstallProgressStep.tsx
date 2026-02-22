@@ -92,6 +92,7 @@ export default function InstallProgressStep() {
                     try {
                         const data = JSON.parse(part);
                         if (data.progress !== undefined) setInstallProgress(data.progress);
+                        if (data.gatewayToken) useInstallStore.getState().setGatewayToken(data.gatewayToken);
                         if (data.log) {
                             addInstallLog(data.log);
                             // Important: Use the latest state to avoid stale closure issues
@@ -118,7 +119,8 @@ export default function InstallProgressStep() {
 
     const handleDashboardAccess = () => {
         const host = sshConfig.host || 'localhost';
-        const url = `http://${host}:18789`;
+        const { gatewayToken } = useInstallStore.getState();
+        const url = `http://${host}:18789${gatewayToken ? `?token=${gatewayToken}` : ''}`;
         window.open(url, '_blank');
     };
 

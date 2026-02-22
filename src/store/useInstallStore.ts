@@ -22,6 +22,7 @@ interface InstallState {
     installLogs: string[];
     isWizardStarted: boolean;
     installType: 'native' | 'docker';
+    gatewayToken: string;
     setStep: (step: number) => void;
     setEnvironment: (env: string) => void;
     setInstallType: (type: 'native' | 'docker') => void;
@@ -31,6 +32,7 @@ interface InstallState {
     setInstallStatus: (status: 'idle' | 'installing' | 'success' | 'error') => void;
     setInstallProgress: (progress: number) => void;
     addInstallLog: (log: string) => void;
+    setGatewayToken: (token: string) => void;
     startWizard: () => void;
 }
 
@@ -52,6 +54,7 @@ export const useInstallStore = create<InstallState>((set) => ({
     installLogs: [],
     isWizardStarted: false,
     installType: 'docker',
+    gatewayToken: '',
     setStep: (step) => set({ currentStep: step }),
     setEnvironment: (env) => set({ environment: env }),
     setInstallType: (type) => set({ installType: type }),
@@ -62,5 +65,6 @@ export const useInstallStore = create<InstallState>((set) => ({
     setInstallStatus: (status) => set({ installStatus: status }),
     setInstallProgress: (progress) => set({ installProgress: progress }),
     addInstallLog: (log) => set((state) => ({ installLogs: [...state.installLogs, log] })),
+    setGatewayToken: (token) => set({ gatewayToken: token }),
     startWizard: () => set({ isWizardStarted: true }),
 }));
