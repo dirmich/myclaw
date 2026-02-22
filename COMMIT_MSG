@@ -1,5 +1,4 @@
-다국어 README 지원 추가 (EN, KO, JP, CN, ES)
+텔레그램 heartbeat 설정 스키마 오류 수정
 
-- 기본 README.md를 영어(EN)로 변경
-- 한국어(KO), 일본어(JP), 중국어(CN), 스페인어(ES) 전용 README 파일 생성
-- 각 파일별 상호 링크 추가 및 GitHub Pages 배포 제약 사항 번역 반영
+- openclaw.json 생성 시 heartbeat 값을 문자열("all")에서 객체({})로 수정
+- Zod 스키마 검증 오류 해결 및 설정 파일 무결성 확보

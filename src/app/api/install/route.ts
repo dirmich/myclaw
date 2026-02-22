@@ -186,7 +186,7 @@ fi
                                     native: "auto"
                                 },
                                 retry: {},
-                                heartbeat: "all",
+                                heartbeat: {},
                                 capabilities: {
                                     inlineButtons: "all"
                                 },
