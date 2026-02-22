@@ -215,7 +215,8 @@ fi
                             heartbeat: {},
                             intents: {
                                 presence: false,
-                                guildMembers: false
+                                guildMembers: false,
+                                messageContent: false
                             }
                         };
                     }
@@ -262,7 +263,7 @@ services:
                     // 4. Run Docker Compose
                     sendLog(60, 'Starting OpenClaw via Docker Compose...');
                     // We'll use a script to handle sudo and capture actual errors
-                    const dockerUpCmd = 'docker compose up -d';
+                    const dockerUpCmd = 'docker compose pull && docker compose up -d';
                     const runScript = sshConfig.password
                         ? `echo "${sshConfig.password.replace(/"/g, '\\"')}" | sudo -S ${dockerUpCmd} 2>&1`
                         : `sudo ${dockerUpCmd} 2>&1`;
