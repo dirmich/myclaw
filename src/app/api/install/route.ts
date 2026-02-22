@@ -154,8 +154,10 @@ fi
                     }
 
                     if (telegramToken) {
-                        configObj.telegram = {
-                            botToken: telegramToken
+                        configObj.channels = {
+                            telegram: {
+                                botToken: telegramToken
+                            }
                         };
                     }
 
