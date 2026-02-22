@@ -1,4 +1,0 @@
-fix: 설치 시 JSON 설정 파일 원격 생성 구문 오류 (JSON5) 해결
-
-- 원격 서버로 설정 파일(`openclaw.json`)과 `docker-compose.yml` 전송 시 발생할 수 있는 bash quoting 및 개행 문자(`\n`) 이스케이프 오류 방지
-- 전송 방식을 기존 문자열 보간(`cat <<EOF`)에서 Base64 인코딩/디코딩 방식으로 변경하여 페이로드 무결성 확보

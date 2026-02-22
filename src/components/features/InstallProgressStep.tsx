@@ -17,6 +17,7 @@ export default function InstallProgressStep() {
         sshConfig,
         aiKey,
         telegramToken,
+        discordToken,
         installStatus,
         installProgress,
         installLogs,
@@ -70,7 +71,7 @@ export default function InstallProgressStep() {
             const res = await fetch('/api/install', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ environment, sshConfig, aiKey, telegramToken }),
+                body: JSON.stringify({ environment, sshConfig, aiKey, telegramToken, discordToken }),
             });
 
             if (!res.body) throw new Error('ReadableStream not supported');
