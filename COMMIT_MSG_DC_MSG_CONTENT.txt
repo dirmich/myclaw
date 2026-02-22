@@ -1,4 +1,0 @@
-fix: OpenClaw Message Content Intent 명시적 비활성화 및 Docker 빌드 풀 추가
-
-- 봇 사용자 편의성을 위해 Discord 연동 설정 생성 시 Message Content intent 값을 `false`로 강제 주입
-- 설치 시 항상 최신 OpenClaw 엔진 바이너리가 동작할 수 있도록 `docker compose up -d` 이전에 `docker compose pull` 명령어 선행 실행
