@@ -4,7 +4,7 @@ import crypto from 'crypto';
 
 export async function POST(request: Request) {
     const body = await request.json();
-    const { environment, sshConfig, aiKey, aiProvider, aiModel, telegramToken } = body;
+    const { environment, sshConfig, aiKey, aiProvider, aiModel, telegramToken, discordToken } = body;
     const installType = 'docker'; // Force docker as requested
 
     if (!sshConfig || !sshConfig.host || !sshConfig.username) {
@@ -173,28 +173,46 @@ fi
                         };
                     }
 
+                    configObj.channels = {};
+
                     if (telegramToken) {
-                        configObj.channels = {
-                            telegram: {
-                                enabled: true,
-                                botToken: telegramToken,
-                                dmPolicy: "open",
-                                allowFrom: ["*"],
-                                // Zod 필수 필드 (빈 객체로 초기화하여 스키마 검증 통과 및 UI 렌더링 지원)
-                                markdown: {},
-                                commands: {
-                                    native: "auto"
-                                },
-                                retry: {},
-                                heartbeat: {},
-                                capabilities: {
-                                    inlineButtons: "all"
-                                },
-                                actions: {
-                                    sendMessage: true,
-                                    reactions: true
-                                }
+                        configObj.channels.telegram = {
+                            enabled: true,
+                            botToken: telegramToken,
+                            dmPolicy: "open",
+                            allowFrom: ["*"],
+                            // Zod 필수 필드 (빈 객체로 초기화하여 스키마 검증 통과 및 UI 렌더링 지원)
+                            markdown: {},
+                            commands: {
+                                native: "auto"
+                            },
+                            retry: {},
+                            heartbeat: {},
+                            capabilities: {
+                                inlineButtons: "all"
+                            },
+                            actions: {
+                                sendMessage: true,
+                                reactions: true
                             }
+                        };
+                    }
+
+                    if (discordToken) {
+                        configObj.channels.discord = {
+                            enabled: true,
+                            token: discordToken,
+                            dm: {
+                                policy: "open",
+                                allowFrom: ["*"]
+                            },
+                            groupPolicy: "open",
+                            markdown: {},
+                            commands: {
+                                native: "auto"
+                            },
+                            retry: {},
+                            heartbeat: {},
                         };
                     }
 

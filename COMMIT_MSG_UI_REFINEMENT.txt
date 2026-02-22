@@ -1,0 +1,12 @@
+UI 및 설치 프로세스 정교화
+
+1. 헤더 'MyClaw' 로고 클릭 시 초기화 및 홈 이동 기능 추가
+2. 환경 선택 화면 개선:
+   - Linux 기반 환경(VirtualBox, EC2, macOS)을 SSH 기반 Linux로 통합
+   - Windows (TODO) 옵션 추가 및 선택 제한
+3. API 키 설정 화면 고도화:
+   - Discord 채널 추가 및 도움말 다이얼로그(API 토큰 획득 가이드) 연동
+   - 텔레그램/디스코드 중 최소 1개 필수 선택 검증 구현
+4. 설치 API(/api/install) 및 키 테스트 API 개편:
+   - Discord 설정 자동 생성 및 다중 채널 설정 동시 지원
+   - Discord 토큰 검증 목업 추가

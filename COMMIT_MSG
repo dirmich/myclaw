@@ -1,4 +1,0 @@
-텔레그램 heartbeat 설정 스키마 오류 수정
-
-- openclaw.json 생성 시 heartbeat 값을 문자열("all")에서 객체({})로 수정
-- Zod 스키마 검증 오류 해결 및 설정 파일 무결성 확보

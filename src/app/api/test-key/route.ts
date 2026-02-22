@@ -54,7 +54,20 @@ export async function POST(request: Request) {
             });
         }
 
-        return NextResponse.json({ success: false, message: 'Invalid verification type.' }, { status: 400 });
+        if (type === 'discord') {
+            if (!body.discordToken) {
+                return NextResponse.json({ success: false, message: 'Please provide a Discord Token.' }, { status: 400 });
+            }
+
+            if (body.discordToken.startsWith('fail')) {
+                return NextResponse.json({ success: false, message: 'Invalid Discord Bot Token.' }, { status: 403 });
+            }
+
+            return NextResponse.json({
+                success: true,
+                message: 'Discord Token validated successfully!'
+            });
+        }
     } catch (error) {
         return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
     }
