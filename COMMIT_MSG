@@ -1,5 +1,6 @@
-Next.js 16 마이그레이션: Middleware를 Proxy 규약으로 변경
+README.md 업데이트: 프로젝트 개요, 설치 및 사용 방법, 배포 안내 추가
 
-- src/middleware.ts를 src/proxy.ts로 기능 및 파일명 변경
-- export default를 export const proxy 방식으로 수정하여 새로운 Next.js 규약 준수
-- 개발 서버 실행 시 발생하는 deprecation 경고 해결
+- 서비스 소개 및 주요 기능 섹션 추가
+- Bun/Node.js 환경에서의 설치 및 실행 단계 상세화
+- 대시보드 사용 방법 및 주의사항 정리
+- GitHub Pages 배포 제약 사항(백엔드 필요성) 안내 추가
