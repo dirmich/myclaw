@@ -118,10 +118,31 @@ fi
 
                     // 2. Prepare directories and configuration
                     sendLog(40, 'Preparing persistent directories and configuration...');
-                    const providerKey = aiProvider === 'gemini' ? 'google' : (aiProvider || 'openai');
+
+                    // Resolve the actual home directory of the SSH user
+                    const homeRes = await ssh.execCommand('echo $HOME');
+                    const realHome = homeRes.stdout.trim() || `/home/${sshConfig.username}`;
+                    const openclawDir = `${realHome}/.openclaw`;
+
+                    // Provider mapping for environment variables
+                    const envVarMap: Record<string, string> = {
+                        openai: 'OPENAI_API_KEY',
+                        anthropic: 'ANTHROPIC_API_KEY',
+                        gemini: 'GEMINI_API_KEY',
+                        groq: 'GROQ_API_KEY',
+                        openrouter: 'OPENROUTER_API_KEY'
+                    };
+
+                    // Provider mapping for model IDs (e.g., gemini -> google)
+                    const providerIdMap: Record<string, string> = {
+                        gemini: 'google',
+                        // others typically match their provider ID
+                    };
+
+                    const modelProvider = providerIdMap[aiProvider] || aiProvider || 'openai';
                     const fullModelId = (aiModel && aiModel.includes('/'))
                         ? aiModel
-                        : (aiProvider === 'gemini' ? `google/${aiModel}` : `${providerKey}/${aiModel || 'gpt-4o'}`);
+                        : `${modelProvider}/${aiModel || (aiProvider === 'anthropic' ? 'claude-3-5-sonnet-latest' : 'gpt-4o')}`;
 
                     const configObj: any = {
                         gateway: {
@@ -133,17 +154,16 @@ fi
                                 allowInsecureAuth: true,
                                 dangerouslyDisableDeviceAuth: true
                             }
+                        },
+                        env: {
+                            vars: {}
                         }
                     };
 
                     if (aiKey) {
-                        configObj.models = {
-                            providers: {
-                                [providerKey]: {
-                                    apiKey: aiKey
-                                }
-                            }
-                        };
+                        const envVarName = envVarMap[aiProvider] || 'OPENAI_API_KEY';
+                        configObj.env.vars[envVarName] = aiKey;
+
                         configObj.agents = {
                             defaults: {
                                 model: {
@@ -163,12 +183,12 @@ fi
 
                     const configJson = JSON.stringify(configObj, null, 2);
                     const prepareDirsCmd = `
-mkdir -p ~/.openclaw/workspace
-cat <<'EOF' > ~/.openclaw/openclaw.json
+mkdir -p "${openclawDir}/workspace"
+cat <<'EOF' > "${openclawDir}/openclaw.json"
 ${configJson}
 EOF
-sudo chown -R 1000:1000 ~/.openclaw
-sudo chmod -R 770 ~/.openclaw
+sudo chown -R 1000:1000 "${openclawDir}"
+sudo chmod -R 770 "${openclawDir}"
 `.trim();
 
                     const sudoPrepareDirs = sshConfig.password
@@ -190,10 +210,11 @@ services:
     ports:
       - "18789:18789"
     volumes:
-      - \${HOME}/.openclaw:/home/node/.openclaw
-      - \${HOME}/.openclaw/workspace:/home/node/.openclaw/workspace
+      - ${openclawDir}:/home/node/.openclaw
+      - ${openclawDir}/workspace:/home/node/.openclaw/workspace
     environment:
       - NODE_ENV=production
+      - OPENCLAW_STATE_DIR=/home/node/.openclaw
 `.trim();
                     // Use a safer way to create the file
                     await ssh.execCommand(`cat <<'EOF' > ~/docker-compose.yml\n${dockerComposeContent}\nEOF`);
