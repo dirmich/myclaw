@@ -1,3 +1,5 @@
+'use client';
+
 import { useTranslations } from 'next-intl';
 import LocaleSwitcher from '@/components/features/LocaleSwitcher';
 import { useInstallStore } from '@/store/useInstallStore';
