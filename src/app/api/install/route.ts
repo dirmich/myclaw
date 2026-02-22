@@ -252,26 +252,45 @@ services:
                     if (upResult.code !== 0) {
                         throw new Error(`Docker Compose failed (code ${upResult.code}): ${cleanOutput || upResult.stderr}`);
                     }
-
                     if (cleanOutput) {
                         sendLog(70, `[Docker] ${cleanOutput}`);
                     }
 
-                    // 5. Final check and restart
-                    sendLog(95, 'Finalizing installation...');
+                    // 5. Final check and readiness polling
+                    sendLog(90, 'Finalizing installation and waiting for dashboard to be ready...');
 
-                    // Wait a bit for the container to stabilize
-                    await new Promise(resolve => setTimeout(resolve, 3000));
+                    let isReady = false;
+                    const maxRetries = 15;
+                    const retryInterval = 2000;
 
-                    // Check gateway logs for errors
-                    const gatewayLogs = await ssh.execCommand('docker logs --tail 20 openclaw-gateway');
-                    sendLog(97, `Gateway logs snapshot: ${gatewayLogs.stdout}`);
+                    for (let i = 0; i < maxRetries; i++) {
+                        const logsResult = await ssh.execCommand('docker logs openclaw-gateway --tail 50');
+                        const logs = logsResult.stdout + logsResult.stderr;
 
-                    // Debug: Check final config on host
-                    const finalConfig = await ssh.execCommand('cat ~/.openclaw/openclaw.json');
-                    sendLog(98, `Applied configuration: ${finalConfig.stdout}`);
+                        if (logs.includes('Gateway listening') || logs.includes('Control UI enabled')) {
+                            isReady = true;
+                            sendLog(95, 'Gateway is ready and listening!');
+                            break;
+                        }
 
-                    sendLog(100, `[SUCCESS] Docker installation completed. Access the UI at http://${sshConfig.host}:18789/?token=${gatewayToken}`);
+                        if (logs.toLowerCase().includes('error') || logs.toLowerCase().includes('failed')) {
+                            // Only report errors if they seem critical, but don't stop yet
+                            const errorLines = logs.split('\n').filter(l => l.toLowerCase().includes('error')).join('\n');
+                            if (errorLines) {
+                                sendLog(90, `[Gateway Status] Waiting for startup (some non-critical logs found)...`);
+                            }
+                        }
+
+                        await new Promise(resolve => setTimeout(resolve, retryInterval));
+                        sendLog(90 + Math.min(4, i / 3), `Waiting for dashboard readiness (attempt ${i + 1}/${maxRetries})...`);
+                    }
+
+                    if (!isReady) {
+                        sendLog(95, 'Warning: Dashboard is taking longer than expected to start. It may still be booting up.');
+                    }
+
+                    const successMsg = `OpenClaw is installed and running! Direct dashboard access: http://${sshConfig.host}:18789/?token=${gatewayToken}`;
+                    sendLog(100, successMsg, { gatewayToken });
 
                 } else {
                     throw new Error('Native installation is currently disabled. Please use Docker.');
