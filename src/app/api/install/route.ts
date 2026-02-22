@@ -116,17 +116,59 @@ fi
                         }
                     }
 
-                    // 2. Prepare directories
-                    sendLog(40, 'Preparing persistent directories with correct permissions...');
-                    // Create basic openclaw.json if it doesn't exist
+                    // 2. Prepare directories and configuration
+                    sendLog(40, 'Preparing persistent directories and configuration...');
+                    const providerKey = aiProvider === 'gemini' ? 'google' : (aiProvider || 'openai');
+                    const fullModelId = (aiModel && aiModel.includes('/'))
+                        ? aiModel
+                        : (aiProvider === 'gemini' ? `google/${aiModel}` : `${providerKey}/${aiModel || 'gpt-4o'}`);
+
+                    const configObj: any = {
+                        gateway: {
+                            bind: 'lan',
+                            auth: {
+                                token: gatewayToken
+                            },
+                            controlUi: {
+                                allowInsecureAuth: true,
+                                dangerouslyDisableDeviceAuth: true
+                            }
+                        }
+                    };
+
+                    if (aiKey) {
+                        configObj.models = {
+                            providers: {
+                                [providerKey]: {
+                                    apiKey: aiKey
+                                }
+                            }
+                        };
+                        configObj.agents = {
+                            defaults: {
+                                model: {
+                                    primary: fullModelId
+                                }
+                            }
+                        };
+                    }
+
+                    if (telegramToken) {
+                        configObj.telegram = {
+                            botToken: telegramToken
+                        };
+                    }
+
+                    const configJson = JSON.stringify(configObj, null, 2);
                     const prepareDirsCmd = `
 mkdir -p ~/.openclaw/workspace
-if [ ! -f ~/.openclaw/openclaw.json ]; then
-  echo '{"gateway": {"bind": "lan"}}' > ~/.openclaw/openclaw.json
-fi
+cat <<'EOF' > ~/.openclaw/openclaw.json
+${configJson}
+EOF
 sudo chown -R 1000:1000 ~/.openclaw
 sudo chmod -R 770 ~/.openclaw
 `.trim();
+
                     const sudoPrepareDirs = sshConfig.password
                         ? `echo "${sshConfig.password.replace(/"/g, '\\"')}" | sudo -S bash -c "${prepareDirsCmd.replace(/"/g, '\\"').replace(/\$/g, '\\$')}"`
                         : `sudo bash -c "${prepareDirsCmd.replace(/"/g, '\\"').replace(/\$/g, '\\$')}"`;
@@ -135,23 +177,6 @@ sudo chmod -R 770 ~/.openclaw
 
                     // 3. Create docker-compose.yml
                     sendLog(50, 'Creating docker-compose.yml...');
-                    const envVars = [];
-                    if (aiKey) {
-                        const provider = aiProvider || 'openai';
-                        if (provider === 'openai') envVars.push(`      - OPENAI_API_KEY=${aiKey}`);
-                        if (provider === 'anthropic') envVars.push(`      - ANTHROPIC_API_KEY=${aiKey}`);
-                        if (provider === 'gemini') envVars.push(`      - GEMINI_API_KEY=${aiKey}`);
-                        if (provider === 'groq') envVars.push(`      - GROQ_API_KEY=${aiKey}`);
-                        if (provider === 'openrouter') envVars.push(`      - OPENROUTER_API_KEY=${aiKey}`);
-                    }
-                    if (telegramToken) {
-                        envVars.push(`      - TELEGRAM_TOKEN=${telegramToken}`);
-                    }
-
-                    // Inject security settings as env vars for initial startup
-                    envVars.push(`      - OPENCLAW_GATEWAY_AUTH_TOKEN=${gatewayToken}`);
-                    envVars.push(`      - OPENCLAW_GATEWAY_CONTROLUI_ALLOWINSECUREAUTH=true`);
-                    envVars.push(`      - OPENCLAW_GATEWAY_CONTROLUI_DANGEROUSLYDISABLEDEVICEAUTH=true`);
 
                     const dockerComposeContent = `
 services:
@@ -167,7 +192,6 @@ services:
       - \${HOME}/.openclaw/workspace:/home/node/.openclaw/workspace
     environment:
       - NODE_ENV=production
-${envVars.join('\n')}
 `.trim();
                     // Use a safer way to create the file
                     await ssh.execCommand(`cat <<'EOF' > ~/docker-compose.yml\n${dockerComposeContent}\nEOF`);
@@ -193,65 +217,22 @@ ${envVars.join('\n')}
                         sendLog(70, `[Docker] ${cleanOutput}`);
                     }
 
-                    // 5. Post-installation configuration
-                    sendLog(95, 'Configuring gateway security and access settings...');
-                    // Debug: Check existing config
-                    const initialConfig = await ssh.execCommand('cat ~/.openclaw/openclaw.json');
-                    sendLog(95, `Initial config: ${initialConfig.stdout}`);
+                    // 5. Final check and restart
+                    sendLog(95, 'Finalizing installation...');
 
-                    // Wait a bit for the container to initialize
-                    await new Promise(resolve => setTimeout(resolve, 5000));
-
-                    // 5a. Persistence configurations (Set via CLI to persist in openclaw.json)
-                    const execCli = async (cmd: string) => {
-                        // Use node dist/index.js directly since openclaw might not be in PATH
-                        const fullCmd = `docker exec openclaw-gateway node dist/index.js ${cmd}`;
-                        const res = await ssh.execCommand(fullCmd);
-                        return res;
-                    };
-
-                    sendLog(96, 'Persisting configuration to openclaw.json...');
-
-                    // 1. Allow external access
-                    await execCli(`config set gateway.bind lan`);
-
-                    // 2. Set authentication token
-                    await execCli(`config set gateway.auth.token ${gatewayToken}`);
-
-                    // 3. Force allowInsecureAuth to true
-                    await execCli(`config set gateway.controlUi.allowInsecureAuth true`);
-
-                    // 4. Dangerously disable device auth
-                    await execCli(`config set gateway.controlUi.dangerouslyDisableDeviceAuth true`);
-
-                    // 5b. AI Keys and Model Configuration
-                    if (aiKey) {
-                        const provider = aiProvider || 'openai';
-                        const model = aiModel || 'gpt-4o';
-                        const fullModelId = model.includes('/') ? model : `${provider}/${model}`;
-
-                        const providerKey = provider === 'gemini' ? 'google' : provider;
-                        await execCli(`config set models.providers.${providerKey}.apiKey ${aiKey}`);
-                        await execCli(`config set agents.defaults.model.primary ${fullModelId}`);
-                    }
-
-                    if (telegramToken) {
-                        await execCli(`config set telegram.botToken ${telegramToken}`);
-                    }
-
-                    // 6. Restart container to apply all changes
-                    sendLog(97, 'Restarting OpenClaw to apply configuration changes...');
-                    await ssh.execCommand('docker restart openclaw-gateway');
+                    // Wait a bit for the container to stabilize
+                    await new Promise(resolve => setTimeout(resolve, 3000));
 
                     // Check gateway logs for errors
                     const gatewayLogs = await ssh.execCommand('docker logs --tail 20 openclaw-gateway');
-                    sendLog(97, `Gateway logs: ${gatewayLogs.stdout}`);
+                    sendLog(97, `Gateway logs snapshot: ${gatewayLogs.stdout}`);
 
-                    // Debug: Check final config
+                    // Debug: Check final config on host
                     const finalConfig = await ssh.execCommand('cat ~/.openclaw/openclaw.json');
-                    sendLog(98, `Final config: ${finalConfig.stdout}`);
+                    sendLog(98, `Applied configuration: ${finalConfig.stdout}`);
 
                     sendLog(100, `[SUCCESS] Docker installation completed. Access the UI at http://${sshConfig.host}:18789/?token=${gatewayToken}`);
+
                 } else {
                     throw new Error('Native installation is currently disabled. Please use Docker.');
                 }
