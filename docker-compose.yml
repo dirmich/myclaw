@@ -10,3 +10,10 @@ services:
     # Optional: mount directories if you need persistent config or files
     # volumes:
     #   - ./data:/app/data
+  networks:
+    backend:
+      ipv4_address: 10.0.1.60
+networks:
+  backend:
+    external:
+      name: backend
