@@ -1,0 +1,4 @@
+fix: Web Control UI token_mismatch 이슈 해결
+
+- /api/install 경로의 원격 docker-compose.yml 생성 시 `GATEWAY_TOKEN` 환경변수를 강제로 주입하도록 변경
+- 주입이 없으면 OpenClaw에서 시작 시 새로운 토큰을 무작위로 생성하여, 설치 마법사에서 보여주는 토큰(또는 로컬에서 들고있는 토큰)과 불일치가 일어나 `unauthorized` 로그가 발생하는 현상 방지

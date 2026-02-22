@@ -254,6 +254,7 @@ services:
     environment:
       - NODE_ENV=production
       - OPENCLAW_STATE_DIR=/home/node/.openclaw
+      - GATEWAY_TOKEN=${gatewayToken}
 `.trim();
                     const composeBase64 = Buffer.from(dockerComposeContent).toString('base64');
                     await ssh.execCommand(`echo "${composeBase64}" | base64 -d > ~/docker-compose.yml`);
