@@ -1,59 +1,61 @@
-# MyClaw (마이클로) 🤖
+# MyClaw 🤖
 
-MyClaw는 원격 서버에 **OpenClaw**를 간편하게 설치하고 관리할 수 있도록 돕는 웹 기반 설치 관리자입니다. SSH를 통해 서버에 접속하여 Docker 기반의 OpenClaw 게이트웨이를 자동으로 구성하고 배포합니다.
+MyClaw is a web-based installer and manager designed to help you easily set up and manage **OpenClaw** on remote servers. It connects to your server via SSH to automatically configure and deploy a Docker-based OpenClaw gateway.
 
-## ✨ 주요 기능
+[한국어](./README-ko.md) | [日本語](./README-jp.md) | [简体中文](./README-cn.md) | [Español](./README-es.md)
 
-- **원격 SSH 설치**: 복잡한 터미널 명령 없이 웹 UI에서 서버 정보만 입력하여 설치 가능
-- **Docker 기반 배포**: Docker 및 Docker Compose를 자동으로 구성하여 일관된 실행 환경 보장
-- **자동 설정 최적화**: `openclaw.json`을 자동으로 생성하고, 텔레그램 채널 스키마 오류를 방지하는 최적의 설정 적용
-- **보안 인증 통합**: 대시보드 접근을 위한 `gatewayToken` 자동 생성 및 인증 플로우 지원
-- **실시간 로그 모니터링**: 설치 과정을 실시간으로 확인하고 장애 발생 시 로그 분석 지원
+## ✨ Key Features
 
-## 🚀 시작하기
+- **Remote SSH Installation**: Install easily from a web UI by entering server details, without complex terminal commands.
+- **Docker-based Deployment**: Automatically configures Docker and Docker Compose to ensure a consistent execution environment.
+- **Auto-configuration Optimization**: Automatically generates `openclaw.json` and applies optimal settings to prevent Telegram channel schema errors.
+- **Integrated Security Authentication**: Supports `gatewayToken` auto-generation and authentication flows for dashboard access.
+- **Real-time Log Monitoring**: Monitor the installation process in real-time and analyze logs if any issues occur.
 
-### 사전 요구 사항
-- 로컬 환경: [Bun](https://bun.sh) 또는 Node.js (v18 이상)
-- 원격 서버: SSH 접근이 가능한 Linux 서버 (Ubuntu 추천) 및 Sudo 권한
+## 🚀 Getting Started
 
-### 설치 및 실행
+### Prerequisites
+- Local Environment: [Bun](https://bun.sh) or Node.js (v18 or higher)
+- Remote Server: A Linux server with SSH access (Ubuntu recommended) and Sudo privileges.
 
-1. **저장소 클론**
+### Installation and Execution
+
+1. **Clone the Repository**
    ```bash
    git clone https://github.com/dirmich/myclaw.git
    cd myclaw
    ```
 
-2. **의존성 설치**
+2. **Install Dependencies**
    ```bash
    bun install
-   # 또는 npm install
+   # or npm install
    ```
 
-3. **개발 서버 실행**
+3. **Run the Development Server**
    ```bash
    bun dev
    ```
 
-4. **접속**
-   브라우저에서 `http://localhost:3000`에 접속합니다.
+4. **Access**
+   Open `http://localhost:3000` in your browser.
 
-## 🛠 사용 방법
+## 🛠 How to Use
 
-1. **서버 정보 입력**: 접속할 원격 서버의 IP, 포트, 사용자 이름, 비밀번호(또는 SSH 키)를 입력합니다.
-2. **AI 설정**: 사용할 AI 모델(OpenAI, Anthropic 등)의 API 키를 입력합니다.
-3. **텔레그램 설정 (선택)**: 텔레그램 봇 토큰을 입력하면 즉시 통신이 가능하도록 자동 구성됩니다.
-4. **설치 시작**: '설치' 버튼을 클릭하면 원격 서버에서 Docker 설치부터 OpenClaw 실행까지 자동으로 진행됩니다.
-5. **대시보드 접속**: 설치가 완료되면 제공되는 링크를 통해 OpenClaw 제어 화면으로 즉시 이동할 수 있습니다.
+1. **Enter Server Info**: Input the IP, port, username, and password (or SSH key) of the remote server.
+2. **AI Settings**: Enter the API key for the AI model you want to use (OpenAI, Anthropic, etc.).
+3. **Telegram Settings (Optional)**: Entering your Telegram Bot Token will automatically configure it for immediate communication.
+4. **Start Installation**: Click the 'Install' button to automatically proceed with Docker installation and OpenClaw execution on the remote server.
+5. **Access Dashboard**: Once installation is complete, use the provided link to go directly to the OpenClaw control screen.
 
-## ☁️ 배포 안내 (GitHub Pages 관련)
+## ☁️ Deployment Guide (GitHub Pages Info)
 
 > [!WARNING]
-> **MyClaw는 GitHub Pages에서 직접 실행할 수 없습니다.**
+> **MyClaw cannot be run directly on GitHub Pages.**
 > 
-> GitHub Pages는 **정적(Static)** 파일만 호스팅할 수 있는 서비스입니다. 마이클로는 SSH 연결과 원격 제어를 위해 **Node.js 백엔드(API Routes)**가 필수적으로 필요합니다. 따라서 다음과 같은 플랫폼을 통한 배포를 권장합니다:
-> - **Vercel**: Next.js 프로젝트를 가장 쉽게 배포할 수 있는 방법입니다.
-> - **Private VPS**: 개인 서버에 Docker 등을 사용하여 직접 호스팅할 수 있습니다.
+> GitHub Pages can only host **static** files. MyClaw requires a **Node.js backend (API Routes)** for SSH connection and remote control. Therefore, we recommend deployment through platforms such as:
+> - **Vercel**: The easiest way to deploy a Next.js project.
+> - **Private VPS**: You can host it directly on your own server using Docker, etc.
 
-## 📄 라이선스
-이 프로젝트는 MIT 라이선스를 따릅니다.
+## 📄 License
+This project is licensed under the MIT License.
