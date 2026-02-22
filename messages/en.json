@@ -52,7 +52,9 @@
     "resources_title": "Minimum Requirements",
     "resources_ram": "RAM: 2GB+ (4GB recommended for browser automation)",
     "resources_cpu": "CPU: 2 Cores+",
-    "resources_storage": "Storage: 10GB+ of free space"
+    "resources_storage": "Storage: 10GB+ of free space",
+    "type_docker": "Docker-based Installation",
+    "type_docker_desc": "Runs in a stable and isolated environment."
   },
   "SSH": {
     "title": "SSH Connection Settings",

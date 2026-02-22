@@ -52,7 +52,9 @@
     "resources_title": "권장 최소 사양",
     "resources_ram": "메모리: 2GB 이상 (브라우저 사용 시 4GB 권장)",
     "resources_cpu": "CPU: 2 코어 이상",
-    "resources_storage": "저장공간: 10GB 이상의 여유 공간"
+    "resources_storage": "저장공간: 10GB 이상의 여유 공간",
+    "type_docker": "Docker 기반 설치",
+    "type_docker_desc": "안정적이고 격리된 환경에서 실행됩니다."
   },
   "SSH": {
     "title": "SSH 접속 설정",
