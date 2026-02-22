@@ -59,6 +59,7 @@ export async function POST(request: Request) {
                 if (installType === 'docker') {
                     // --- DOCKER INSTALLATION PATH ---
                     sendLog(15, 'Starting Docker-based installation...');
+                    const gatewayToken = crypto.randomBytes(16).toString('hex');
 
                     // 1. Check/Install Docker
                     sendLog(20, 'Checking if Docker is installed...');
@@ -147,6 +148,11 @@ sudo chmod -R 770 ~/.openclaw
                         envVars.push(`      - TELEGRAM_TOKEN=${telegramToken}`);
                     }
 
+                    // Inject security settings as env vars for initial startup
+                    envVars.push(`      - OPENCLAW_GATEWAY_AUTH_TOKEN=${gatewayToken}`);
+                    envVars.push(`      - OPENCLAW_GATEWAY_CONTROLUI_ALLOWINSECUREAUTH=true`);
+                    envVars.push(`      - OPENCLAW_GATEWAY_CONTROLUI_DANGEROUSLYDISABLEDEVICEAUTH=true`);
+
                     const dockerComposeContent = `
 services:
   openclaw:
@@ -196,30 +202,27 @@ ${envVars.join('\n')}
                     // Wait a bit for the container to initialize
                     await new Promise(resolve => setTimeout(resolve, 5000));
 
-                    const gatewayToken = crypto.randomBytes(16).toString('hex');
+                    // 5a. Persistence configurations (Set via CLI to persist in openclaw.json)
+                    const execCli = async (cmd: string) => {
+                        // Use node dist/index.js directly since openclaw might not be in PATH
+                        const fullCmd = `docker exec openclaw-gateway node dist/index.js ${cmd}`;
+                        const res = await ssh.execCommand(fullCmd);
+                        return res;
+                    };
 
-                    // 5a. Basic configurations (Always needed for LAN/HTTP access)
+                    sendLog(96, 'Persisting configuration to openclaw.json...');
+
                     // 1. Allow external access
-                    await ssh.execCommand(`docker exec openclaw-gateway openclaw config set gateway.bind lan`).catch(() => {
-                        return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js config set gateway.bind lan`);
-                    });
+                    await execCli(`config set gateway.bind lan`);
 
                     // 2. Set authentication token
-                    await ssh.execCommand(`docker exec openclaw-gateway openclaw config set gateway.auth.token ${gatewayToken}`).catch(() => {
-                        return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js config set gateway.auth.token ${gatewayToken}`);
-                    });
+                    await execCli(`config set gateway.auth.token ${gatewayToken}`);
 
-                    // 3. Force allowInsecureAuth to true for HTTP/LAN access
-                    const insecRes = await ssh.execCommand(`docker exec openclaw-gateway openclaw config set gateway.controlUi.allowInsecureAuth true`).catch(() => {
-                        return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js config set gateway.controlUi.allowInsecureAuth true`);
-                    });
-                    sendLog(96, `InsecureAuth config result: ${insecRes.stdout || insecRes.stderr}`);
+                    // 3. Force allowInsecureAuth to true
+                    await execCli(`config set gateway.controlUi.allowInsecureAuth true`);
 
-                    // 4. Dangerously disable device auth for easier HTTP access
-                    const devAuthRes = await ssh.execCommand(`docker exec openclaw-gateway openclaw config set gateway.controlUi.dangerouslyDisableDeviceAuth true`).catch(() => {
-                        return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js config set gateway.controlUi.dangerouslyDisableDeviceAuth true`);
-                    });
-                    sendLog(96, `DeviceAuth config result: ${devAuthRes.stdout || devAuthRes.stderr}`);
+                    // 4. Dangerously disable device auth
+                    await execCli(`config set gateway.controlUi.dangerouslyDisableDeviceAuth true`);
 
                     // 5b. AI Keys and Model Configuration
                     if (aiKey) {
@@ -227,22 +230,13 @@ ${envVars.join('\n')}
                         const model = aiModel || 'gpt-4o';
                         const fullModelId = model.includes('/') ? model : `${provider}/${model}`;
 
-                        // Add provider and model via config set
                         const providerKey = provider === 'gemini' ? 'google' : provider;
-                        await ssh.execCommand(`docker exec openclaw-gateway openclaw config set models.providers.${providerKey}.apiKey ${aiKey}`).catch(() => {
-                            return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js config set models.providers.${providerKey}.apiKey ${aiKey}`);
-                        });
-
-                        // Set as primary model for default agent
-                        await ssh.execCommand(`docker exec openclaw-gateway openclaw config set agents.defaults.model.primary ${fullModelId}`).catch(() => {
-                            return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js config set agents.defaults.model.primary ${fullModelId}`);
-                        });
+                        await execCli(`config set models.providers.${providerKey}.apiKey ${aiKey}`);
+                        await execCli(`config set agents.defaults.model.primary ${fullModelId}`);
                     }
 
                     if (telegramToken) {
-                        await ssh.execCommand(`docker exec openclaw-gateway openclaw config set telegram.botToken ${telegramToken}`).catch(() => {
-                            return ssh.execCommand(`docker exec openclaw-gateway node dist/index.js config set telegram.botToken ${telegramToken}`);
-                        });
+                        await execCli(`config set telegram.botToken ${telegramToken}`);
                     }
 
                     // 6. Restart container to apply all changes
