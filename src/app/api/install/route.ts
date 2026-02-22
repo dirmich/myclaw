@@ -213,6 +213,10 @@ fi
                             },
                             retry: {},
                             heartbeat: {},
+                            intents: {
+                                presence: false,
+                                guildMembers: false
+                            }
                         };
                     }
 

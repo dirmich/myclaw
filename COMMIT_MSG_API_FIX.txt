@@ -1,4 +1,0 @@
-fix: 텔레그램 및 디스코드 API 키 실제 검증 로직 적용
-
-- /api/test-key 엔드포인트의 테스트용 임시 응답을 제거
-- 디스코드 `Failed to resolve Discord application id` 등 설치 후 환경에서 발생할 수 있는 오류를 사전에 방지하기 위해, 실제 API 연동을 통한 유효성(App ID 확인 등) 검증 적용
